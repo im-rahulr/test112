@@ -128,6 +128,21 @@ h1, h2, h3 {
   font-weight: 600;
 }
 
+.dashboard-options a.option {
+  color: inherit;
+  text-decoration: none;
+  display: inline-block;
+}
+
+.dashboard-options a.option:visited {
+  color: inherit;
+}
+
+.dashboard-options a.option:hover {
+  background: #f0f0f0;
+  text-decoration: none;
+}
+
 /* Back Button */
 .back-button {
   background-color: var(--primary-color);
@@ -1345,4 +1360,66 @@ h1, h2, h3 {
 .lang-btn.active {
   background: #4CAF50;
   color: white;
+}
+
+/* Dashboard Header */
+.dashboard-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.month-navigation {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+#currentMonthDisplay {
+  font-size: 1.2rem;
+  font-weight: 500;
+  color: var(--text-color);
+}
+
+.next-month-btn {
+  background-color: var(--primary-color);
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: background-color 0.3s;
+}
+
+.next-month-btn:hover {
+  background-color: var(--secondary-color);
+}
+
+.next-month-btn:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+
+.action-btn {
+  background-color: var(--primary-color);
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  margin-top: 10px;
+  transition: background-color 0.3s;
+  width: 100%;
+}
+
+.action-btn:hover {
+  background-color: var(--secondary-color);
+}
+
+.action-btn:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
 } 

@@ -6,6 +6,70 @@
   <title>News - Growthly</title>
   <link rel="stylesheet" href="styles.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    .news-filters {
+      margin: 20px 0;
+      display: flex;
+      gap: 15px;
+      flex-wrap: wrap;
+    }
+    .filter-button {
+      padding: 8px 15px;
+      border: 1px solid #ddd;
+      border-radius: 20px;
+      background: white;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    .filter-button.active {
+      background: #007bff;
+      color: white;
+      border-color: #007bff;
+    }
+    .news-card {
+      position: relative;
+      padding: 20px;
+      margin-bottom: 20px;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      background: white;
+    }
+    .impact-indicator {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-size: 0.9em;
+      font-weight: bold;
+    }
+    .impact-positive {
+      background: #d4edda;
+      color: #155724;
+    }
+    .impact-negative {
+      background: #f8d7da;
+      color: #721c24;
+    }
+    .stock-tag {
+      display: inline-block;
+      padding: 4px 8px;
+      background: #e9ecef;
+      border-radius: 4px;
+      margin-top: 10px;
+      font-size: 0.9em;
+    }
+    .translate-button {
+      position: absolute;
+      bottom: 10px;
+      right: 10px;
+      padding: 5px 10px;
+      background: #f8f9fa;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+  </style>
 </head>
 <body>
   <div class="container">
@@ -16,46 +80,606 @@
       </div>
     </div>
 
-    <div class="news-container">
-      <div class="news-card">
-        <div class="news-date">May 15, 2023</div>
-        <h3>RBI Keeps Repo Rate Unchanged at 6.5%</h3>
-        <p>The Reserve Bank of India (RBI) has decided to keep the repo rate unchanged at 6.5% in its latest monetary policy meeting. This decision was made to control inflation while supporting economic growth. Experts suggest this could have implications for loan interest rates and market dynamics in the coming months.</p>
-        <a href="#" class="read-more">Read Full Story</a>
+    <div class="news-filters">
+      <button class="filter-button active" data-filter="all">All News</button>
+      <button class="filter-button" data-filter="HDFC">HDFC Bank</button>
+      <button class="filter-button" data-filter="Reliance">Reliance Digital</button>
+      <button class="filter-button" data-filter="infosys">Infosys</button>
+      <button class="filter-button" data-filter="NIFTY">NIFTY</button>
+      <button class="filter-button" data-filter="TCS">TCS</button>
+      <button class="filter-button" data-filter="ICICI">ICICI Bank</button>
       </div>
-      <div class="news-card">
-        <div class="news-date">May 14, 2023</div>
-        <h3>Indian Stock Market Reaches All-Time High</h3>
-        <p>The Sensex crossed the 70,000 mark for the first time, reflecting strong foreign investment inflows and positive economic indicators. This milestone comes after several months of steady growth in various sectors, particularly IT, banking, and pharmaceuticals. Market analysts are optimistic about continued growth through the year.</p>
-        <a href="#" class="read-more">Read Full Story</a>
-      </div>
-      <div class="news-card">
-        <div class="news-date">May 12, 2023</div>
-        <h3>Government Announces New Tax Benefits for Startups</h3>
-        <p>The Finance Ministry has announced new tax benefits for startups, aiming to boost entrepreneurship and innovation in the country. The new policy includes tax holidays for the first three years of operation and reduced compliance requirements. Industry leaders have welcomed this move as a significant step towards creating a more vibrant startup ecosystem.</p>
-        <a href="#" class="read-more">Read Full Story</a>
-      </div>
-      <div class="news-card">
-        <div class="news-date">May 10, 2023</div>
-        <h3>ICICI Bank Reports Strong Quarterly Earnings</h3>
-        <p>ICICI Bank has reported a 17% year-on-year increase in net profit for the quarter ending March 2023. The bank's robust performance was driven by growth in retail lending and improved asset quality. This has led to a positive outlook for the banking sector, with analysts predicting continued strong performance in the coming quarters.</p>
-        <a href="#" class="read-more">Read Full Story</a>
-      </div>
-      <div class="news-card">
-        <div class="news-date">May 8, 2023</div>
-        <h3>Foreign Investors Pour $3 Billion into Indian Equities</h3>
-        <p>Foreign Portfolio Investors (FPIs) have invested over $3 billion in Indian equities in the first week of May, marking the highest weekly inflow in 2023. This significant investment is attributed to India's strong economic fundamentals and resilient market performance despite global uncertainties.</p>
-        <a href="#" class="read-more">Read Full Story</a>
-      </div>
-      <div class="news-card">
-        <div class="news-date">May 5, 2023</div>
-        <h3>Digital Payments in India Grow by 50% in Volume</h3>
-        <p>Digital payment transactions in India have seen a remarkable 50% increase in volume compared to last year, according to the latest data from the National Payments Corporation of India (NPCI). UPI transactions led this growth, with over 8 billion transactions processed in April alone, highlighting the country's rapid digital transformation in the financial sector.</p>
-        <a href="#" class="read-more">Read Full Story</a>
-      </div>
+
+    <div class="news-container" id="newsContainer">
+      <!-- News items will be dynamically populated here -->
     </div>
   </div>
 
-  <script src="script.js"></script>
+  <script>
+    const newsData = [
+      {
+        title: "HDFC Bank becomes third Indian company to achieve Rs 15 lakh crore market cap",
+        impact: 0.012,
+        stock: "HDFC",
+        date: "2024-03-20"
+      },
+      {
+        title: "RBI grants approval for HDFC Bank to expand 100 new branches",
+        impact: 0.028,
+        stock: "HDFC",
+        date: "2024-03-19"
+      },
+      {
+        title: "HDFC Bank's net profit jumps 20% in quarterly results",
+        impact: 0.045,
+        stock: "HDFC",
+        date: "2024-03-18"
+      },
+      {
+        title: "Foreign investors increase their stake in HDFC Bank",
+        impact: 0.023,
+        stock: "HDFC",
+        date: "2024-03-17"
+      },
+      {
+        title: "Home loan interest rates drop to 7.8%, boosting HDFC Bank's retail lending potential",
+        impact: 0.035,
+        stock: "HDFC",
+        date: "2024-03-16"
+      },
+      {
+        title: "HDFC Bank enters into strategic partnership with a major fintech startup",
+        impact: 0.018,
+        stock: "HDFC",
+        date: "2024-03-15"
+      },
+      {
+        title: "RBI fines HDFC Bank ₹75 lakh for KYC violations",
+        impact: -0.50,
+        stock: "HDFC",
+        date: "2024-03-14"
+      },
+      {
+        title: "HDFC Bank's net profit declines by 10% in latest quarterly report",
+        impact: -4.20,
+        stock: "HDFC",
+        date: "2024-03-13"
+      },
+      {
+        title: "Cyber attack disrupts HDFC Bank's digital banking services for 2 days",
+        impact: -3.10,
+        stock: "HDFC",
+        date: "2024-03-12"
+      },
+      {
+        title: "Spike in NPAs reported in HDFC Bank's retail lending portfolio",
+        impact: -5.20,
+        stock: "HDFC",
+        date: "2024-03-11"
+      },
+      {
+        title: "RBI restricts HDFC Bank from issuing new credit cards temporarily",
+        impact: -2.70,
+        stock: "HDFC",
+        date: "2024-03-10"
+      },
+      {
+        title: "Reliance Digital announces aggressive expansion into Tier-2 and Tier-3 cities",
+        impact: 0.032,
+        stock: "Reliance",
+        date: "2024-03-20"
+      },
+      {
+        title: "Reliance Digital reports 18% YoY revenue growth in Q1 results",
+        impact: 0.048,
+        stock: "Reliance",
+        date: "2024-03-19"
+      },
+      {
+        title: "Global tech giant partners with Reliance Digital for retail tech innovation",
+        impact: 0.029,
+        stock: "Reliance",
+        date: "2024-03-18"
+      },
+      {
+        title: "Reliance Digital launches exclusive smartphone brand with competitive pricing",
+        impact: 0.036,
+        stock: "Reliance",
+        date: "2024-03-17"
+      },
+      {
+        title: "Reliance Digital expands online sales platform with 24-hour delivery promise",
+        impact: 0.024,
+        stock: "Reliance",
+        date: "2024-03-16"
+      },
+      {
+        title: "Reliance Digital faces data breach impacting millions of customers",
+        impact: -4.60,
+        stock: "Reliance",
+        date: "2024-03-15"
+      },
+      {
+        title: "Reliance Digital under investigation for anti-competitive pricing practices",
+        impact: -3.90,
+        stock: "Reliance",
+        date: "2024-03-14"
+      },
+      {
+        title: "Reliance Digital posts unexpected 7% revenue decline in quarterly results",
+        impact: -4.30,
+        stock: "Reliance",
+        date: "2024-03-13"
+      },
+      {
+        title: "Prolonged supply chain disruptions hit Reliance Digital's inventory availability",
+        impact: -3.50,
+        stock: "Reliance",
+        date: "2024-03-12"
+      },
+      {
+        title: "Reliance Digital employees stage protest over wage and working conditions",
+        impact: -2.10,
+        stock: "Reliance",
+        date: "2024-03-11"
+      },
+      {
+        title: "Infosys completes stake sale in Japan JV HIPUS to Mitsubishi Heavy Industries",
+        impact: 0.025,
+        stock: "infosys",
+        date: "2024-03-20"
+      },
+      {
+        title: "Infosys positioned as a Leader in the 2024 Gartner Magic Quadrant",
+        impact: 0.018,
+        stock: "infosys",
+        date: "2024-03-19"
+      },
+      {
+        title: "Infosys collaborates with Lufthansa Group to accelerate digital innovation",
+        impact: 0.021,
+        stock: "infosys",
+        date: "2024-03-18"
+      },
+      {
+        title: "Infosys shares surge nearly 8% following US-China trade truce announcement",
+        impact: 0.03,
+        stock: "infosys",
+        date: "2024-03-17"
+      },
+      {
+        title: "Infosys announces ₹22 per share final dividend for FY25",
+        impact: 0.015,
+        stock: "infosys",
+        date: "2024-03-16"
+      },
+      {
+        title: "Infosys Q4 net profit declines 11.75% YoY; revenue growth forecast slashed",
+        impact: -4.00,
+        stock: "infosys",
+        date: "2024-03-15"
+      },
+      {
+        title: "Infosys informs employees of lower bonus payouts amid industry uncertainties",
+        impact: -2.00,
+        stock: "infosys",
+        date: "2024-03-14"
+      },
+      {
+        title: "Infosys stock drops below 200-DMA after 8 months amid layoffs",
+        impact: -3.50,
+        stock: "infosys",
+        date: "2024-03-13"
+      },
+      {
+        title: "Infosys shares plunge 4.01% amid volume surge",
+        impact: -4.00,
+        stock: "infosys",
+        date: "2024-03-12"
+      },
+      {
+        title: "Infosys ADRs fall 3.85% following weak TCS Q4 results",
+        impact: -2.50,
+        stock: "infosys",
+        date: "2024-03-11"
+      },
+      {
+        title: "U.S.-India Trade Deal Speculation",
+        impact: 0.03,
+        stock: "NIFTY",
+        date: "2024-03-20"
+      },
+      {
+        title: "Regulatory Challenges",
+        impact: -1.50,
+        stock: "NIFTY",
+        date: "2024-03-19"
+      },
+      {
+        title: "India-Pakistan Ceasefire",
+        impact: 0.022,
+        stock: "NIFTY",
+        date: "2024-03-18"
+      },
+      {
+        title: "Rupee Depreciation",
+        impact: -1.00,
+        stock: "NIFTY",
+        date: "2024-03-17"
+      },
+      {
+        title: "Decline in Crude Oil and Gold Prices",
+        impact: 0.018,
+        stock: "NIFTY",
+        date: "2024-03-16"
+      },
+      {
+        title: "Global Market Volatility",
+        impact: -1.50,
+        stock: "NIFTY",
+        date: "2024-03-15"
+      },
+      {
+        title: "India's GST collections hit record high",
+        impact: 0.025,
+        stock: "NIFTY",
+        date: "2024-03-14"
+      },
+      {
+        title: "Inflation eases to 5%",
+        impact: 0.017,
+        stock: "NIFTY",
+        date: "2024-03-13"
+      },
+      {
+        title: "Power sector reforms announced",
+        impact: 0.02,
+        stock: "NIFTY",
+        date: "2024-03-12"
+      },
+      {
+        title: "Rising COVID-19 cases trigger concerns",
+        impact: -2.20,
+        stock: "NIFTY",
+        date: "2024-03-11"
+      },
+      {
+        title: "FIIs invest over ₹46,000 crore in 19 sessions",
+        impact: 0.04,
+        stock: "NIFTY",
+        date: "2024-03-10"
+      },
+      {
+        title: "FIIs withdraw ₹32,000 crore amid global trade tensions",
+        impact: -2.50,
+        stock: "NIFTY",
+        date: "2024-03-09"
+      },
+      {
+        title: "TCS reverses headcount trend, adds 5,452 employees in Q1 FY25",
+        impact: 0.035,
+        stock: "TCS",
+        date: "2024-03-20"
+      },
+      {
+        title: "TCS named a winner across five solution categories in Chartis RiskTech100 2024",
+        impact: 0.028,
+        stock: "TCS",
+        date: "2024-03-19"
+      },
+      {
+        title: "TCS Q1 profit rises 9% YoY to ₹12,040 crore, beats estimates",
+        impact: 0.042,
+        stock: "TCS",
+        date: "2024-03-18"
+      },
+      {
+        title: "TCS Q2 revenue increases 8% YoY to ₹64,259 crore",
+        impact: 0.03,
+        stock: "TCS",
+        date: "2024-03-17"
+      },
+      {
+        title: "TCS declares ₹9 per share interim dividend in Q1 FY25",
+        impact: 0.015,
+        stock: "TCS",
+        date: "2024-03-16"
+      },
+      {
+        title: "TCS Q2 profit rises 5% YoY to ₹11,909 crore, misses estimates",
+        impact: -2.00,
+        stock: "TCS",
+        date: "2024-03-15"
+      },
+      {
+        title: "TCS Q1 profit declines 3.16% QoQ to ₹12,040 crore",
+        impact: -1.80,
+        stock: "TCS",
+        date: "2024-03-14"
+      },
+      {
+        title: "TCS Q4 profit falls 2% YoY to ₹12,224 crore, misses estimates",
+        impact: -2.50,
+        stock: "TCS",
+        date: "2024-03-13"
+      },
+      {
+        title: "TCS reverses headcount trend, adds 625 employees in Q4 FY25",
+        impact: -0.50,
+        stock: "TCS",
+        date: "2024-03-12"
+      },
+      {
+        title: "TCS faces increased attrition rate at 12.3% in Q2 FY25",
+        impact: -1.00,
+        stock: "TCS",
+        date: "2024-03-11"
+      },
+      {
+        title: "ICICI Bank reports record Q4 profit of ₹12,630 crore, exceeding estimates",
+        impact: 0.045,
+        stock: "ICICI",
+        date: "2024-03-20"
+      },
+      {
+        title: "Net interest income (NII) rises 11% YoY to ₹21,193 crore in Q4",
+        impact: 0.032,
+        stock: "ICICI",
+        date: "2024-03-19"
+      },
+      {
+        title: "Gross NPA ratio improves to 1.67% in Q4 from 1.96% in Q3",
+        impact: 0.028,
+        stock: "ICICI",
+        date: "2024-03-18"
+      },
+      {
+        title: "ICICI Bank fined ₹97.80 lakh by RBI for regulatory non-compliance",
+        impact: 0.01,
+        stock: "ICICI",
+        date: "2024-03-17"
+      },
+      {
+        title: "ICICI Bank's ADR earns relative strength rating upgrade to 75",
+        impact: 0.015,
+        stock: "ICICI",
+        date: "2024-03-16"
+      },
+      {
+        title: "ICICI Bank faces RBI penalty for cybersecurity and KYC lapses",
+        impact: -2.00,
+        stock: "ICICI",
+        date: "2024-03-15"
+      },
+      {
+        title: "Net NPA ratio increases to 0.42% in Q3 from 0.39% in Q2",
+        impact: -1.50,
+        stock: "ICICI",
+        date: "2024-03-14"
+      },
+      {
+        title: "ICICI Bank's net profit growth slows to 14.6% in Q1 FY25",
+        impact: -1.20,
+        stock: "ICICI",
+        date: "2024-03-13"
+      },
+      {
+        title: "ICICI Bank's NIM declines to 4.36% in Q1 from 4.78% YoY",
+        impact: -1.00,
+        stock: "ICICI",
+        date: "2024-03-12"
+      },
+      {
+        title: "ICICI Bank's provisioning for bad loans increases by 17% in Q3",
+        impact: -1.30,
+        stock: "ICICI",
+        date: "2024-03-11"
+      }
+    ];
+
+    function createNewsCard(news) {
+      const impactClass = news.impact >= 0 ? 'impact-positive' : 'impact-negative';
+      const impactText = news.impact >= 0 ? `+${news.impact}%` : `${news.impact}%`;
+      
+      return `
+        <div class="news-card" data-stock="${news.stock}">
+          <div class="news-date">${news.date}</div>
+          <h3>${news.title}</h3>
+          <div class="impact-indicator ${impactClass}">${impactText}</div>
+          <div class="stock-tag">${news.stock}</div>
+          <button class="translate-button" onclick="translateNews(this)">
+            <i class="fas fa-language"></i> Translate
+          </button>
+        </div>
+      `;
+    }
+
+    function filterNews(stock) {
+      const newsCards = document.querySelectorAll('.news-card');
+      newsCards.forEach(card => {
+        if (stock === 'all' || card.dataset.stock === stock) {
+          card.style.display = 'block';
+        } else {
+          card.style.display = 'none';
+        }
+      });
+    }
+
+    // Simple translation mapping for common financial terms
+    const translations = {
+      'HDFC Bank': 'एचडीएफसी बैंक',
+      'RBI': 'आरबीआई',
+      'net profit': 'शुद्ध लाभ',
+      'quarterly results': 'त्रैमासिक परिणाम',
+      'foreign investors': 'विदेशी निवेशक',
+      'interest rates': 'ब्याज दरें',
+      'retail lending': 'खुदरा ऋण',
+      'strategic partnership': 'रणनीतिक साझेदारी',
+      'fintech': 'फिनटेक',
+      'KYC': 'केवाईसी',
+      'violations': 'उल्लंघन',
+      'declines': 'गिरावट',
+      'cyber attack': 'साइबर हमला',
+      'digital banking': 'डिजिटल बैंकिंग',
+      'NPAs': 'एनपीए',
+      'credit cards': 'क्रेडिट कार्ड',
+      'Reliance Digital': 'रिलायंस डिजिटल',
+      'expansion': 'विस्तार',
+      'revenue growth': 'राजस्व वृद्धि',
+      'tech innovation': 'तकनीकी नवाचार',
+      'smartphone': 'स्मार्टफोन',
+      'competitive pricing': 'प्रतिस्पर्धी मूल्य',
+      'data breach': 'डेटा उल्लंघन',
+      'anti-competitive': 'प्रतिस्पर्धा विरोधी',
+      'supply chain': 'आपूर्ति श्रृंखला',
+      'inventory': 'इन्वेंटरी',
+      'employees': 'कर्मचारी',
+      'wage': 'मजदूरी',
+      'Infosys': 'इन्फोसिस',
+      'stake sale': 'हिस्सेदारी बिक्री',
+      'partnership': 'साझेदारी',
+      'dividend': 'लाभांश',
+      'shares': 'शेयर',
+      'profit': 'लाभ',
+      'revenue': 'राजस्व',
+      'forecast': 'पूर्वानुमान',
+      'bonus': 'बोनस',
+      'layoffs': 'छंटनी',
+      'TCS': 'टीसीएस',
+      'ICICI Bank': 'आईसीआईसीआई बैंक',
+      'record': 'रिकॉर्ड',
+      'exceeding': 'अधिक',
+      'estimates': 'अनुमान',
+      'interest income': 'ब्याज आय',
+      'NPA ratio': 'एनपीए अनुपात',
+      'regulatory': 'नियामक',
+      'compliance': 'अनुपालन',
+      'cybersecurity': 'साइबर सुरक्षा',
+      'lapses': 'चूक',
+      'provisioning': 'प्रावधान',
+      'bad loans': 'खराब ऋण',
+      'NIFTY': 'निफ्टी',
+      'Trade Deal': 'व्यापार समझौता',
+      'Speculation': 'अटकलें',
+      'Regulatory': 'नियामक',
+      'Challenges': 'चुनौतियां',
+      'Ceasefire': 'युद्धविराम',
+      'Rupee': 'रुपया',
+      'Depreciation': 'मूल्यह्रास',
+      'Crude Oil': 'कच्चा तेल',
+      'Gold': 'सोना',
+      'Market': 'बाजार',
+      'Volatility': 'अस्थिरता',
+      'GST': 'जीएसटी',
+      'collections': 'संग्रह',
+      'Inflation': 'मुद्रास्फीति',
+      'Power sector': 'बिजली क्षेत्र',
+      'reforms': 'सुधार',
+      'COVID-19': 'कोविड-19',
+      'cases': 'मामले',
+      'FIIs': 'एफआईआई',
+      'invest': 'निवेश',
+      'withdraw': 'निकासी',
+      'global': 'वैश्विक',
+      'trade tensions': 'व्यापार तनाव',
+      'headcount': 'कर्मचारी संख्या',
+      'employees': 'कर्मचारी',
+      'attrition': 'अपव्यय',
+      'rate': 'दर'
+    };
+
+    function translateNews(button) {
+      const newsCard = button.closest('.news-card');
+      const title = newsCard.querySelector('h3').textContent;
+      
+      // Create a loading indicator
+      const originalButtonText = button.innerHTML;
+      button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Translating...';
+      
+      // Simulate translation delay
+      setTimeout(() => {
+        let translatedTitle = title;
+        
+        // Replace English terms with Hindi translations
+        Object.keys(translations).forEach(term => {
+          const regex = new RegExp(term, 'gi');
+          translatedTitle = translatedTitle.replace(regex, translations[term]);
+        });
+        
+        newsCard.querySelector('h3').textContent = translatedTitle;
+        
+        // Add a toggle button to switch between original and translated text
+        const toggleButton = document.createElement('button');
+        toggleButton.className = 'toggle-translation';
+        toggleButton.innerHTML = '<i class="fas fa-exchange-alt"></i> Toggle Language';
+        toggleButton.style.position = 'absolute';
+        toggleButton.style.bottom = '10px';
+        toggleButton.style.right = '120px';
+        toggleButton.style.padding = '5px 10px';
+        toggleButton.style.background = '#f8f9fa';
+        toggleButton.style.border = '1px solid #ddd';
+        toggleButton.style.borderRadius = '4px';
+        toggleButton.style.cursor = 'pointer';
+        
+        let isTranslated = true;
+        toggleButton.onclick = () => {
+          if (isTranslated) {
+            newsCard.querySelector('h3').textContent = title;
+            toggleButton.innerHTML = '<i class="fas fa-language"></i> Show Hindi';
+          } else {
+            newsCard.querySelector('h3').textContent = translatedTitle;
+            toggleButton.innerHTML = '<i class="fas fa-exchange-alt"></i> Show English';
+          }
+          isTranslated = !isTranslated;
+        };
+        
+        newsCard.appendChild(toggleButton);
+        button.innerHTML = originalButtonText;
+      }, 500); // Simulate 500ms delay for translation
+    }
+
+    // Function to get random news items
+    function getRandomNews(count) {
+      const shuffled = [...newsData].sort(() => 0.5 - Math.random());
+      return shuffled.slice(0, count);
+    }
+
+    // Initialize the news feed
+    document.addEventListener('DOMContentLoaded', () => {
+      const newsContainer = document.getElementById('newsContainer');
+      const randomNews = getRandomNews(3); // Get 3 random news items
+      
+      randomNews.forEach(news => {
+        newsContainer.innerHTML += createNewsCard(news);
+      });
+
+      // Add filter button event listeners
+      document.querySelectorAll('.filter-button').forEach(button => {
+        button.addEventListener('click', (e) => {
+          document.querySelectorAll('.filter-button').forEach(btn => btn.classList.remove('active'));
+          e.target.classList.add('active');
+          
+          // Clear current news
+          newsContainer.innerHTML = '';
+          
+          // Get filtered news
+          let filteredNews;
+          if (e.target.dataset.filter === 'all') {
+            filteredNews = getRandomNews(3);
+          } else {
+            filteredNews = newsData
+              .filter(news => news.stock === e.target.dataset.filter)
+              .sort(() => 0.5 - Math.random())
+              .slice(0, 3);
+          }
+          
+          // Display filtered news
+          filteredNews.forEach(news => {
+            newsContainer.innerHTML += createNewsCard(news);
+          });
+        });
+      });
+    });
+  </script>
 </body>
 </html> 

@@ -31,7 +31,13 @@
     </div>
 
     <div id="dashboard" class="section">
-      <h2 data-translate="dashboard">Dashboard</h2>
+      <div class="dashboard-header">
+        <h2>Dashboard</h2>
+        <div class="month-navigation">
+          <span id="currentMonthDisplay">May 2024</span>
+          <button id="nextMonthBtn" class="next-month-btn">Next Month</button>
+        </div>
+      </div>
       <div class="dashboard-options">
         <div class="option" data-target="income">
           <i class="fas fa-wallet"></i>
@@ -45,10 +51,10 @@
           <i class="fas fa-chart-line"></i>
           <span data-translate="investment">Investment</span>
         </div>
-        <div class="option" data-target="news">
+        <a href="news.html" class="option" data-target="news">
           <i class="fas fa-globe"></i>
           <span data-translate="news">News</span>
-        </div>
+        </a>
         <div class="option" data-target="goals">
           <i class="fas fa-bullseye"></i>
           <span data-translate="goals">Goals</span>
@@ -76,10 +82,12 @@
           <div class="income-card">
             <h3 data-translate="monthlyIncome">Monthly Income</h3>
             <p class="amount">₹75,000</p>
+            <button id="collectIncomeBtn" class="action-btn">Collect Income</button>
           </div>
           <div class="income-card">
             <h3 data-translate="monthlyExpenses">Monthly Expenses</h3>
             <p class="amount">₹45,000</p>
+            <button id="payExpensesBtn" class="action-btn">Pay Expenses</button>
           </div>
           <div class="income-card">
             <h3 data-translate="savings">Savings</h3>

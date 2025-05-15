@@ -148,6 +148,31 @@ document.addEventListener('DOMContentLoaded', function() {
     }
   };
   
+  // Month navigation and financial updates
+  let currentMonth = new Date().getMonth();
+  let currentYear = new Date().getFullYear();
+  const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+  
+  // Initialize finance data
+  const financeData = {
+    salary: 75000,
+    expenses: {
+      housing: 15750,
+      food: 11250,
+      transportation: 6750,
+      entertainment: 4500,
+      others: 6750
+    },
+    savings: 30000,
+    stockImpact: 0
+  };
+  
+  // Add these variables at the top with other state variables
+  const monthlyIncome = 75000; // Fixed monthly income
+  let monthlyExpenses = 45000; // Fixed monthly expenses
+  let incomeCollected = false;
+  let expensesPaid = false;
+  
   // Initial UI Updates & Data Setup
   function initializeApp() {
     updateBalanceDisplay();
@@ -279,8 +304,9 @@ document.addEventListener('DOMContentLoaded', function() {
   }
   
   function updateBalanceDisplay() {
-    if (balanceDisplaySpan) {
-      balanceDisplaySpan.textContent = `₹${currentUserBalance.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
+    const balanceAmount = document.getElementById('balance-amount');
+    if (balanceAmount) {
+      balanceAmount.textContent = `₹${currentUserBalance.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
     }
   }
   
@@ -291,9 +317,7 @@ document.addEventListener('DOMContentLoaded', function() {
     } else if (isInitial) {
         // For other initial transactions, this will be the balance *after* this specific setup transaction
         // The global currentUserBalance is managed by initializeApp for setup items.
-    } else {
-        currentUserBalance += amount; // For runtime transactions, update global balance immediately
-    }
+    } 
 
     transactions.push({
       date: new Date().toLocaleDateString('en-IN'),
@@ -736,4 +760,158 @@ function renderMarketStocks() {
       });
     });
   });
+
+  // Update month display
+  function updateMonthDisplay() {
+    const monthDisplay = document.getElementById('currentMonthDisplay');
+    if (monthDisplay) {
+      monthDisplay.textContent = `${monthNames[currentMonth]} ${currentYear}`;
+    }
+  }
+
+  // Calculate total expenses
+  function calculateTotalExpenses() {
+    return Object.values(financeData.expenses).reduce((sum, expense) => sum + expense, 0);
+  }
+
+  // Update financial data for next month
+  function updateFinancialData() {
+    // Update salary with a small random increase (0-5%)
+    
+   //inanceData.salary = Math.round(financeData.salary * salaryIncrease);
+
+    // Update expenses with small random changes (-2% to +2%)
+    Object.keys(financeData.expenses).forEach(category => {
+      const change = 0.98 + (Math.random() * 0.04);
+      financeData.expenses[category] = Math.round(financeData.expenses[category] * change);
+    });
+
+    // Update savings
+    const totalExpenses = calculateTotalExpenses();
+    financeData.savings = financeData.salary - totalExpenses;
+
+    // Update UI
+    updateFinancialDisplay();
+  }
+
+  // Update financial display
+  function updateFinancialDisplay() {
+    // Update income card
+    const incomeAmount = document.querySelector('.income-card:nth-child(1) .amount');
+    if (incomeAmount) {
+      incomeAmount.textContent = `₹${financeData.salary.toLocaleString()}`;
+    }
+
+    // Update expenses card
+    const expensesAmount = document.querySelector('.income-card:nth-child(2) .amount');
+    if (expensesAmount) {
+      expensesAmount.textContent = `₹${calculateTotalExpenses().toLocaleString()}`;
+    }
+
+    // Update savings card
+    const savingsAmount = document.querySelector('.income-card:nth-child(3) .amount');
+    if (savingsAmount) {
+      savingsAmount.textContent = `₹${financeData.savings.toLocaleString()}`;
+    }
+
+    // Update expense breakdown
+    Object.entries(financeData.expenses).forEach(([category, amount], index) => {
+      const expenseItem = document.querySelector(`.expense-item:nth-child(${index + 1})`);
+      if (expenseItem) {
+        const progressBar = expenseItem.querySelector('.progress');
+        const amountSpan = expenseItem.querySelector('span:last-child');
+        const percentage = (amount / calculateTotalExpenses()) * 100;
+        
+        progressBar.style.width = `${percentage}%`;
+        amountSpan.textContent = `₹${amount.toLocaleString()}`;
+      }
+    });
+  }
+
+  // Add these functions after the existing functions
+  function collectMonthlyIncome() {
+    if (!incomeCollected) {
+      currentUserBalance += monthlyIncome;
+      addTransaction('Monthly Income', 'Salary deposit', monthlyIncome);
+      incomeCollected = true;
+      updateBalanceDisplay();
+      
+      // Update the income card display
+      const incomeAmount = document.querySelector('.income-card:nth-child(1) .amount');
+      if (incomeAmount) {
+        incomeAmount.textContent = `₹${monthlyIncome.toLocaleString()}`;
+      }
+      
+      alert('Monthly income collected successfully!');
+    } else {
+      alert('You have already collected this month\'s income.');
+    }
+  }
+
+  function payMonthlyExpenses() {
+    if (!expensesPaid) {
+      if (currentUserBalance >= monthlyExpenses) {
+        currentUserBalance -= monthlyExpenses;
+        addTransaction('Monthly Expenses', 'Monthly expenses payment', -monthlyExpenses);
+        expensesPaid = true;
+        updateBalanceDisplay();
+        
+        // Update the expenses card display
+        const expensesAmount = document.querySelector('.income-card:nth-child(2) .amount');
+        if (expensesAmount) {
+          expensesAmount.textContent = `₹${monthlyExpenses.toLocaleString()}`;
+        }
+        
+        // Update savings display
+        const savingsAmount = document.querySelector('.income-card:nth-child(3) .amount');
+        if (savingsAmount) {
+          const savings = monthlyIncome - monthlyExpenses;
+          savingsAmount.textContent = `₹${savings.toLocaleString()}`;
+        }
+        
+        alert('Monthly expenses paid successfully!');
+      } else {
+        alert('Insufficient balance to pay monthly expenses.');
+      }
+    } else {
+      alert('You have already paid this month\'s expenses.');
+    }
+  }
+
+  // Modify the nextMonthBtn click handler
+  const nextMonthBtn = document.getElementById('nextMonthBtn');
+  if (nextMonthBtn) {
+    nextMonthBtn.addEventListener('click', function() {
+      if (!expensesPaid) {
+        alert('Please pay your monthly expenses before moving to the next month.');
+        return;
+      }
+
+      currentMonth++;
+      if (currentMonth > 11) {
+        currentMonth = 0;
+        currentYear++;
+      }
+      
+      // Reset monthly flags
+      incomeCollected = false;
+      expensesPaid = false;
+      
+      updateMonthDisplay();
+      
+      // Disable button if we've reached the maximum month (current month)
+      const now = new Date();
+      if (currentMonth === now.getMonth() && currentYear === now.getFullYear()) {
+        nextMonthBtn.disabled = true;
+      }
+    });
+  }
+
+  // Initialize display
+  updateMonthDisplay();
+  updateFinancialDisplay();
+
+  // Add this in the DOMContentLoaded event listener section
+  document.getElementById('collectIncomeBtn')?.addEventListener('click', collectMonthlyIncome);
+  document.getElementById('payExpensesBtn')?.addEventListener('click', payMonthlyExpenses);
 }); 

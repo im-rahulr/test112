@@ -773,4 +773,67 @@ document.addEventListener('DOMContentLoaded', function() {
       });
     }
   }
+
+  // Stock impact calculation based on news sentiment
+  function calculateStockImpact(sentiment) {
+    // Convert sentiment to a number between -1 and 1
+    let sentimentValue;
+    switch(sentiment.toLowerCase()) {
+      case 'positive':
+        sentimentValue = 1;
+        break;
+      case 'negative':
+        sentimentValue = -1;
+        break;
+      case 'neutral':
+        sentimentValue = 0;
+        break;
+      default:
+        sentimentValue = 0;
+    }
+
+    // Calculate impact percentage (-5% to +5%)
+    const impactPercentage = sentimentValue * (Math.random() * 5);
+    return impactPercentage;
+  }
+
+  // Update stock prices based on news impact
+  function updateStockPrices() {
+    const stocks = {
+      'HDFC Bank': { price: 1520, sentiment: 'positive' },
+      'Reliance Industries': { price: 2750, sentiment: 'neutral' },
+      'Infosys': { price: 1480, sentiment: 'negative' }
+    };
+
+    Object.entries(stocks).forEach(([stockName, data]) => {
+      const impact = calculateStockImpact(data.sentiment);
+      const newPrice = data.price * (1 + (impact / 100));
+      
+      // Update the stock price in the UI
+      const stockElement = document.querySelector(`[data-stock="${stockName}"]`);
+      if (stockElement) {
+        const priceElement = stockElement.querySelector('.stock-price');
+        const changeElement = stockElement.querySelector('.stock-change');
+        
+        if (priceElement && changeElement) {
+          const oldPrice = parseFloat(priceElement.textContent.replace('₹', '').replace(',', ''));
+          const priceChange = newPrice - oldPrice;
+          const changePercentage = (priceChange / oldPrice) * 100;
+          
+          priceElement.textContent = `₹${newPrice.toFixed(2)}`;
+          changeElement.textContent = `${priceChange >= 0 ? '+' : ''}${priceChange.toFixed(2)} (${changePercentage.toFixed(2)}%)`;
+          changeElement.className = `stock-change ${priceChange >= 0 ? 'positive' : 'negative'}`;
+        }
+      }
+    });
+  }
+
+  // Initialize stock updates
+  document.addEventListener('DOMContentLoaded', function() {
+    // Update stock prices every 5 seconds
+    setInterval(updateStockPrices, 5000);
+    
+    // Initial update
+    updateStockPrices();
+  });
 }); 
