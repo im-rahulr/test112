@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Growthly</title>
+  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+  <div class="container">
+    <div id="homepage" class="section active">
+      <h1 class="title">Growthly</h1>
+      <p class="subtitle">Your financial growth partner</p>
+      <button id="playButton" class="play-button">
+        <i class="fas fa-play"></i>
+      </button>
+    </div>
+
+    <div id="dashboard" class="section">
+      <h2>Dashboard</h2>
+      <div class="dashboard-options">
+        <div class="option" data-target="income">
+          <i class="fas fa-wallet"></i>
+          <span>Income</span>
+        </div>
+        <div class="option" data-target="article">
+          <i class="fas fa-newspaper"></i>
+          <span>Article</span>
+        </div>
+        <div class="option" data-target="investment">
+          <i class="fas fa-chart-line"></i>
+          <span>Investment</span>
+        </div>
+        <div class="option" data-target="news">
+          <i class="fas fa-globe"></i>
+          <span>News</span>
+        </div>
+      </div>
+    </div>
+
+    <div id="income" class="section">
+      <h2>Income & Expenses</h2>
+      <button class="back-button">Back to Dashboard</button>
+      <div class="income-container">
+        <div class="income-card">
+          <h3>Monthly Income</h3>
+          <p class="amount">₹75,000</p>
+        </div>
+        <div class="income-card">
+          <h3>Monthly Expenses</h3>
+          <p class="amount">₹45,000</p>
+        </div>
+        <div class="income-card">
+          <h3>Savings</h3>
+          <p class="amount">₹30,000</p>
+        </div>
+      </div>
+      <div class="expenses-breakdown">
+        <h3>Expense Breakdown</h3>
+        <div class="expense-item">
+          <span>Housing</span>
+          <div class="progress-bar">
+            <div class="progress" style="width: 35%;"></div>
+          </div>
+          <span>₹15,750</span>
+        </div>
+        <div class="expense-item">
+          <span>Food</span>
+          <div class="progress-bar">
+            <div class="progress" style="width: 25%;"></div>
+          </div>
+          <span>₹11,250</span>
+        </div>
+        <div class="expense-item">
+          <span>Transportation</span>
+          <div class="progress-bar">
+            <div class="progress" style="width: 15%;"></div>
+          </div>
+          <span>₹6,750</span>
+        </div>
+        <div class="expense-item">
+          <span>Entertainment</span>
+          <div class="progress-bar">
+            <div class="progress" style="width: 10%;"></div>
+          </div>
+          <span>₹4,500</span>
+        </div>
+        <div class="expense-item">
+          <span>Others</span>
+          <div class="progress-bar">
+            <div class="progress" style="width: 15%;"></div>
+          </div>
+          <span>₹6,750</span>
+        </div>
+      </div>
+    </div>
+
+    <div id="article" class="section">
+      <h2>Articles</h2>
+      <button class="back-button">Back to Dashboard</button>
+      <div class="articles-container">
+        <div class="article-card">
+          <h3>How to Create a Budget That Works</h3>
+          <p class="article-preview">Creating a budget is the first step toward financial stability. Learn how to create one that you can actually stick to...</p>
+          <a href="#" class="read-more">Read More</a>
+        </div>
+        <div class="article-card">
+          <h3>Investing in Mutual Funds: A Beginner's Guide</h3>
+          <p class="article-preview">Mutual funds are a great way for beginners to get started with investing. Here's what you need to know...</p>
+          <a href="#" class="read-more">Read More</a>
+        </div>
+        <div class="article-card">
+          <h3>Understanding the Power of Compound Interest</h3>
+          <p class="article-preview">Compound interest is often called the eighth wonder of the world. Find out why and how it can help you grow your wealth...</p>
+          <a href="#" class="read-more">Read More</a>
+        </div>
+      </div>
+    </div>
+
+    <div id="investment" class="section">
+      <h2>Investment</h2>
+      <button class="back-button">Back to Dashboard</button>
+      <div class="stocks-container">
+        <div class="stock-card">
+          <div class="stock-info">
+            <h3>HDFC Bank</h3>
+            <p class="stock-price">₹1,562.45</p>
+          </div>
+          <div class="stock-change increase">
+            <span>+1.5%</span>
+          </div>
+        </div>
+        <div class="stock-card">
+          <div class="stock-info">
+            <h3>Reliance Industries</h3>
+            <p class="stock-price">₹2,834.20</p>
+          </div>
+          <div class="stock-change increase">
+            <span>+0.8%</span>
+          </div>
+        </div>
+        <div class="stock-card">
+          <div class="stock-info">
+            <h3>Infosys</h3>
+            <p class="stock-price">₹1,467.75</p>
+          </div>
+          <div class="stock-change decrease">
+            <span>-0.6%</span>
+          </div>
+        </div>
+        <div class="stock-card">
+          <div class="stock-info">
+            <h3>Tata Consultancy</h3>
+            <p class="stock-price">₹3,456.90</p>
+          </div>
+          <div class="stock-change increase">
+            <span>+1.2%</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="news" class="section">
+      <h2>News</h2>
+      <button class="back-button">Back to Dashboard</button>
+      <div class="news-container">
+        <div class="news-card">
+          <div class="news-date">May 15, 2023</div>
+          <h3>RBI Keeps Repo Rate Unchanged at 6.5%</h3>
+          <p>The Reserve Bank of India (RBI) has decided to keep the repo rate unchanged at 6.5% in its latest monetary policy meeting...</p>
+          <a href="#" class="read-more">Read Full Story</a>
+        </div>
+        <div class="news-card">
+          <div class="news-date">May 14, 2023</div>
+          <h3>Indian Stock Market Reaches All-Time High</h3>
+          <p>The Sensex crossed the 70,000 mark for the first time, reflecting strong foreign investment inflows and positive economic indicators...</p>
+          <a href="#" class="read-more">Read Full Story</a>
+        </div>
+        <div class="news-card">
+          <div class="news-date">May 12, 2023</div>
+          <h3>Government Announces New Tax Benefits for Startups</h3>
+          <p>The Finance Ministry has announced new tax benefits for startups, aiming to boost entrepreneurship and innovation in the country...</p>
+          <a href="#" class="read-more">Read Full Story</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html> 
