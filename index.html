@@ -12,108 +12,112 @@
   <div class="user-balance-container">
     <div class="user-balance">
       <i class="fas fa-wallet"></i>
-      <span>Balance: ₹2,45,320</span>
+      <span><span data-translate="balance">Balance</span>: <span id="balance-amount">₹2,45,320</span></span>
     </div>
   </div>
 
   <div class="container">
     <div id="homepage" class="section active">
       <h1 class="title">Growthly</h1>
-      <p class="subtitle">Lets play!</p>
+      <p class="subtitle" data-translate="letsPlay">Let's play!</p>
       <button id="playButton" class="play-button">
         <i class="fas fa-play"></i>
       </button>
+      <div class="language-selector">
+        <button class="lang-btn" data-lang="en">English</button>
+        <button class="lang-btn" data-lang="hi">हिंदी</button>
+        <button class="lang-btn" data-lang="kn">ಕನ್ನಡ</button>
+      </div>
     </div>
 
     <div id="dashboard" class="section">
-      <h2>Dashboard</h2>
+      <h2 data-translate="dashboard">Dashboard</h2>
       <div class="dashboard-options">
         <div class="option" data-target="income">
           <i class="fas fa-wallet"></i>
-          <span>Income</span>
+          <span data-translate="income">Income</span>
         </div>
         <div class="option" data-target="article">
           <i class="fas fa-newspaper"></i>
-          <span>Article</span>
+          <span data-translate="article">Article</span>
         </div>
         <div class="option" data-target="investment">
           <i class="fas fa-chart-line"></i>
-          <span>Investment</span>
+          <span data-translate="investment">Investment</span>
         </div>
         <div class="option" data-target="news">
           <i class="fas fa-globe"></i>
-          <span>News</span>
+          <span data-translate="news">News</span>
         </div>
         <div class="option" data-target="goals">
           <i class="fas fa-bullseye"></i>
-          <span>Goals</span>
+          <span data-translate="goals">Goals</span>
         </div>
         <div class="option" data-target="transactions">
           <i class="fas fa-history"></i>
-          <span>Transaction Log</span>
+          <span data-translate="transactions">Transaction Log</span>
         </div>
       </div>
     </div>
 
     <div id="income" class="section">
-      <h2>Income & Expenses</h2>
-      <button class="back-button">Back to Dashboard</button>
+      <h2 data-translate="income">Income & Expenses</h2>
+      <button class="back-button" data-translate="backToDashboard">Back to Dashboard</button>
       
       <!-- Monthly Finance Management Tabs -->
       <div class="finance-tabs">
         <div class="tab active" data-tab="overview">Overview</div>
-        <div class="tab" data-tab="budget">Budget Planning</div>
-        <div class="tab" data-tab="goals">Savings Goals</div>
-        <div class="tab" data-tab="calculator">Calculators</div>
+        <div class="tab" data-tab="goals" data-translate="goals">Savings Goals</div>
+        <div class="tab" data-tab="calculator" data-translate="financialCalculators">Calculators</div>
       </div>
       
       <div class="tab-content" id="overview-content">
         <div class="income-container">
           <div class="income-card">
-            <h3>Monthly Income</h3>
+            <h3 data-translate="monthlyIncome">Monthly Income</h3>
             <p class="amount">₹75,000</p>
           </div>
           <div class="income-card">
-            <h3>Monthly Expenses</h3>
+            <h3 data-translate="monthlyExpenses">Monthly Expenses</h3>
             <p class="amount">₹45,000</p>
           </div>
           <div class="income-card">
-            <h3>Savings</h3>
+            <h3 data-translate="savings">Savings</h3>
             <p class="amount">₹30,000</p>
           </div>
         </div>
         <div class="expenses-breakdown">
-          <h3>Expense Breakdown</h3>
+          <h3 data-translate="expenseBreakdown">Expense Breakdown</h3>
           <div class="expense-item">
-            <span>Housing</span>
+            <span data-translate="housing">Housing</span>
             <div class="progress-bar">
               <div class="progress" style="width: 35%;"></div>
             </div>
             <span>₹15,750</span>
           </div>
           <div class="expense-item">
-            <span>Food</span>
+            <span data-translate="food">Food</span>
             <div class="progress-bar">
               <div class="progress" style="width: 25%;"></div>
             </div>
             <span>₹11,250</span>
           </div>
           <div class="expense-item">
-            <span>Transportation</span>
+            <span data-translate="transportation">Transportation</span>
             <div class="progress-bar">
               <div class="progress" style="width: 15%;"></div>
             </div>
             <span>₹6,750</span>
           </div>
           <div class="expense-item">
-            <span>Entertainment</span>
+            <span data-translate="entertainment">Entertainment</span>
             <div class="progress-bar">
               <div class="progress" style="width: 10%;"></div>
             </div>
             <span>₹4,500</span>
           </div>
           <div class="expense-item">
-            <span>Others</span>
+            <span data-translate="others">Others</span>
             <div class="progress-bar">
               <div class="progress" style="width: 15%;"></div>
             </div>
@@ -122,57 +126,9 @@
         </div>
         
         <div class="chart-container">
-          <h3>Monthly Spending Trends</h3>
+          <h3 data-translate="monthlySpendingTrends">Monthly Spending Trends</h3>
           <div class="spending-chart">
             <canvas id="spendingChart"></canvas>
-          </div>
-        </div>
-      </div>
-      
-      <div class="tab-content hidden" id="budget-content">
-        <div class="budget-planner">
-          <h3>Budget Planning</h3>
-          <div class="budget-form">
-            <div class="form-group">
-              <label for="income-amount">Monthly Income</label>
-              <input type="number" id="income-amount" placeholder="Enter your monthly income">
-            </div>
-            
-            <h4>Expense Categories</h4>
-            <div class="expense-categories">
-              <div class="category-item">
-                <label for="housing-budget">Housing</label>
-                <input type="number" id="housing-budget" placeholder="0">
-                <div class="recommended">Recommended: 30-35%</div>
-              </div>
-              <div class="category-item">
-                <label for="food-budget">Food</label>
-                <input type="number" id="food-budget" placeholder="0">
-                <div class="recommended">Recommended: 20-25%</div>
-              </div>
-              <div class="category-item">
-                <label for="transport-budget">Transportation</label>
-                <input type="number" id="transport-budget" placeholder="0">
-                <div class="recommended">Recommended: 10-15%</div>
-              </div>
-              <div class="category-item">
-                <label for="entertainment-budget">Entertainment</label>
-                <input type="number" id="entertainment-budget" placeholder="0">
-                <div class="recommended">Recommended: 5-10%</div>
-              </div>
-              <div class="category-item">
-                <label for="savings-budget">Savings</label>
-                <input type="number" id="savings-budget" placeholder="0">
-                <div class="recommended">Recommended: 20%</div>
-              </div>
-              <div class="category-item">
-                <label for="others-budget">Others</label>
-                <input type="number" id="others-budget" placeholder="0">
-                <div class="recommended">Recommended: 10-15%</div>
-              </div>
-            </div>
-            
-            <button class="save-budget">Save Budget Plan</button>
           </div>
         </div>
       </div>
@@ -229,8 +185,6 @@
           
           <div class="calculator-tabs">
             <div class="calc-tab active" data-calc="sip">SIP Calculator</div>
-            <div class="calc-tab" data-calc="loan">Loan EMI</div>
-            <div class="calc-tab" data-calc="fd">Fixed Deposit</div>
           </div>
           
           <div class="calculator-content" id="sip-calculator">

@@ -33,6 +33,121 @@ document.addEventListener('DOMContentLoaded', function() {
   let portfolioChart = null;
   let stockChart = null;
   
+  // Language translations
+  const translations = {
+    en: {
+      balance: "Balance",
+      dashboard: "Dashboard",
+      income: "Income",
+      article: "Article",
+      investment: "Investment",
+      news: "News",
+      goals: "Goals",
+      transactions: "Transaction Log",
+      letsPlay: "Let's play!",
+      backToDashboard: "Back to Dashboard",
+      monthlyIncome: "Monthly Income",
+      monthlyExpenses: "Monthly Expenses",
+      savings: "Savings",
+      expenseBreakdown: "Expense Breakdown",
+      housing: "Housing",
+      food: "Food",
+      transportation: "Transportation",
+      entertainment: "Entertainment",
+      others: "Others",
+      monthlySpendingTrends: "Monthly Spending Trends",
+      yourSavingsGoals: "Your Savings Goals",
+      addNewGoal: "Add New Goal",
+      target: "Target",
+      saved: "Saved",
+      addFunds: "Add Funds",
+      edit: "Edit",
+      financialCalculators: "Financial Calculators",
+      sipCalculator: "SIP Calculator",
+      monthlyInvestment: "Monthly Investment",
+      investmentPeriod: "Investment Period",
+      expectedReturn: "Expected Return",
+      calculate: "Calculate",
+      investedAmount: "Invested Amount",
+      estimatedReturns: "Estimated Returns",
+      totalValue: "Total Value"
+    },
+    hi: {
+      balance: "बैलेंस",
+      dashboard: "डैशबोर्ड",
+      income: "आय",
+      article: "लेख",
+      investment: "निवेश",
+      news: "समाचार",
+      goals: "लक्ष्य",
+      transactions: "लेनदेन लॉग",
+      letsPlay: "चलो खेलें!",
+      backToDashboard: "डैशबोर्ड पर वापस जाएं",
+      monthlyIncome: "मासिक आय",
+      monthlyExpenses: "मासिक खर्च",
+      savings: "बचत",
+      expenseBreakdown: "खर्च का विवरण",
+      housing: "आवास",
+      food: "भोजन",
+      transportation: "परिवहन",
+      entertainment: "मनोरंजन",
+      others: "अन्य",
+      monthlySpendingTrends: "मासिक खर्च के रुझान",
+      yourSavingsGoals: "आपके बचत लक्ष्य",
+      addNewGoal: "नया लक्ष्य जोड़ें",
+      target: "लक्ष्य",
+      saved: "बचाया",
+      addFunds: "धन जोड़ें",
+      edit: "संपादित करें",
+      financialCalculators: "वित्तीय कैलकुलेटर",
+      sipCalculator: "एसआईपी कैलकुलेटर",
+      monthlyInvestment: "मासिक निवेश",
+      investmentPeriod: "निवेश अवधि",
+      expectedReturn: "अपेक्षित रिटर्न",
+      calculate: "गणना करें",
+      investedAmount: "निवेशित राशि",
+      estimatedReturns: "अनुमानित रिटर्न",
+      totalValue: "कुल मूल्य"
+    },
+    kn: {
+      balance: "ಬ್ಯಾಲೆನ್ಸ್",
+      dashboard: "ಡ್ಯಾಶ್‌ಬೋರ್ಡ್",
+      income: "ಆದಾಯ",
+      article: "ಲೇಖನ",
+      investment: "ಹೂಡಿಕೆ",
+      news: "ಸುದ್ದಿ",
+      goals: "ಗುರಿಗಳು",
+      transactions: "ವಹಿವಾಟು ಲಾಗ್",
+      letsPlay: "ಆಡೋಣ!",
+      backToDashboard: "ಡ್ಯಾಶ್‌ಬೋರ್ಡ್‌ಗೆ ಹಿಂತಿರುಗಿ",
+      monthlyIncome: "ಮಾಸಿಕ ಆದಾಯ",
+      monthlyExpenses: "ಮಾಸಿಕ ಖರ್ಚು",
+      savings: "ಉಳಿತಾಯ",
+      expenseBreakdown: "ಖರ್ಚು ವಿಭಜನೆ",
+      housing: "ವಸತಿ",
+      food: "ಆಹಾರ",
+      transportation: "ಸಾರಿಗೆ",
+      entertainment: "ಮನರಂಜನೆ",
+      others: "ಇತರರು",
+      monthlySpendingTrends: "ಮಾಸಿಕ ಖರ್ಚು ಪ್ರವೃತ್ತಿಗಳು",
+      yourSavingsGoals: "ನಿಮ್ಮ ಉಳಿತಾಯ ಗುರಿಗಳು",
+      addNewGoal: "ಹೊಸ ಗುರಿ ಸೇರಿಸಿ",
+      target: "ಗುರಿ",
+      saved: "ಉಳಿಸಲಾಗಿದೆ",
+      addFunds: "ಹಣ ಸೇರಿಸಿ",
+      edit: "ಸಂಪಾದಿಸಿ",
+      financialCalculators: "ಹಣಕಾಸು ಕ್ಯಾಲ್ಕುಲೇಟರ್‌ಗಳು",
+      sipCalculator: "ಎಸ್‌ಐಪಿ ಕ್ಯಾಲ್ಕುಲೇಟರ್",
+      monthlyInvestment: "ಮಾಸಿಕ ಹೂಡಿಕೆ",
+      investmentPeriod: "ಹೂಡಿಕೆ ಅವಧಿ",
+      expectedReturn: "ನಿರೀಕ್ಷಿತ ಆದಾಯ",
+      calculate: "ಲೆಕ್ಕಾಚಾರ ಮಾಡಿ",
+      investedAmount: "ಹೂಡಿಕೆ ಮಾಡಿದ ಮೊತ್ತ",
+      estimatedReturns: "ಅಂದಾಜು ಆದಾಯ",
+      totalValue: "ಒಟ್ಟು ಮೌಲ್ಯ"
+    }
+  };
+  
   // Initial UI Updates & Data Setup
   function initializeApp() {
     updateBalanceDisplay();
@@ -120,8 +235,7 @@ document.addEventListener('DOMContentLoaded', function() {
   });
   
   document.querySelector('.calculate-btn')?.addEventListener('click', calculateSIP);
-  document.querySelector('.save-budget')?.addEventListener('click', saveBudgetPlan);
-  
+
   // Event delegation for dynamically created stock cards in market view
   if(marketStocksContainer){
     marketStocksContainer.addEventListener('click', function(e){
@@ -392,8 +506,7 @@ function renderMarketStocks() {
   
   // SIP & Budget (no balance impact currently)
   function calculateSIP() { const mi=parseFloat(document.getElementById('monthly-investment').value)||0, y=parseFloat(document.getElementById('investment-period').value)||0, er=parseFloat(document.getElementById('expected-return').value)||0, m=y*12, mr=er/12/100, amt=mi*((Math.pow(1+mr,m)-1)/mr)*(1+mr), ia=mi*m, esr=amt-ia; const res=document.querySelectorAll('.result-value'); res[0].textContent='₹'+Math.round(ia).toLocaleString(); res[1].textContent='₹'+Math.round(esr).toLocaleString(); res[2].textContent='₹'+Math.round(amt).toLocaleString(); }
-  function saveBudgetPlan() { alert('Budget plan saved (simulation)!'); }
-  
+
   // Stock Details Modal & Chart
   function showStockDetails(stockName) {
     const modal = stockDetailsModal; if (!modal) return;
@@ -567,4 +680,60 @@ function renderMarketStocks() {
       delete modal.internalWindowClickHandler;
     }
   }
+
+  // Function to change language
+  function changeLanguage(lang) {
+    // Store selected language in localStorage
+    localStorage.setItem('selectedLanguage', lang);
+
+    // Update active button
+    document.querySelectorAll('.lang-btn').forEach(btn => {
+      btn.classList.remove('active');
+      if (btn.dataset.lang === lang) {
+        btn.classList.add('active');
+      }
+    });
+
+    // Update all translatable elements
+    const elements = document.querySelectorAll('[data-translate]');
+    elements.forEach(element => {
+      const key = element.getAttribute('data-translate');
+      if (translations[lang][key]) {
+        element.textContent = translations[lang][key];
+      }
+    });
+
+    // Special handling for balance label (do not overwrite amount)
+    const balanceLabel = document.querySelector('.user-balance [data-translate="balance"]');
+    if (balanceLabel) {
+      balanceLabel.textContent = translations[lang].balance;
+    }
+
+    // Update back buttons
+    document.querySelectorAll('.back-button').forEach(btn => {
+      btn.textContent = translations[lang].backToDashboard;
+    });
+
+    // Update section titles
+    document.querySelector('#dashboard h2').textContent = translations[lang].dashboard;
+    document.querySelector('#income h2').textContent = translations[lang].income;
+    document.querySelector('#article h2').textContent = translations[lang].article;
+    document.querySelector('#investment h2').textContent = translations[lang].investment;
+    document.querySelector('#news h2').textContent = translations[lang].news;
+    document.querySelector('#goals h2').textContent = translations[lang].goals;
+    document.querySelector('#transactions h2').textContent = translations[lang].transactions;
+  }
+
+  // Initialize language and attach event listeners after DOM is loaded
+  window.addEventListener('DOMContentLoaded', () => {
+    const savedLanguage = localStorage.getItem('selectedLanguage') || 'en';
+    changeLanguage(savedLanguage);
+
+    // Add click event listeners to language buttons
+    document.querySelectorAll('.lang-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        changeLanguage(btn.dataset.lang);
+      });
+    });
+  });
 }); 
