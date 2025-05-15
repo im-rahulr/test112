@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Investment - Growthly</title>
+  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="investment.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+  <div class="investment-page">
+    <div class="search-container">
+      <div class="search-bar">
+        <i class="fas fa-search"></i>
+        <input type="text" placeholder="Search stocks, ETFs, mutual funds...">
+      </div>
+      <button class="more-options"><i class="fas fa-ellipsis-v"></i></button>
+    </div>
+    
+    <div class="stock-view">
+      <div class="stock-header">
+        <a href="index.html" class="back-nav"><i class="fas fa-arrow-left"></i></a>
+        <h2>ICICI Bank Ltd.</h2>
+        <button class="holdings-btn"><i class="fas fa-briefcase"></i></button>
+        <button class="more-options"><i class="fas fa-ellipsis-v"></i></button>
+      </div>
+      
+      <div class="stock-details">
+        <div class="stock-name">
+          <h2>ICICIBANK</h2>
+          <p>ICICI Bank Ltd</p>
+        </div>
+        
+        <div class="price-section">
+          <div class="price-info">
+            <h1>₹ 324.00</h1>
+            <p class="price-change positive">+23.05 (7.23%)</p>
+          </div>
+          
+          <div class="suggested-call">
+            <p>Suggested Call</p>
+            <div class="buy-sell-wrapper">
+              <div class="action-toggle">
+                <button class="action-btn buy active">BUY</button>
+                <button class="action-btn sell">SELL</button>
+              </div>
+              <div class="quantity-input">
+                <label>Quantity</label>
+                <div class="quantity-controls">
+                  <button class="qty-btn minus">-</button>
+                  <input type="number" min="1" value="1" class="qty-value">
+                  <button class="qty-btn plus">+</button>
+                </div>
+                <p class="total-value">Total: ₹324.00</p>
+              </div>
+              <button class="buy-button" data-action="buy">BUY</button>
+            </div>
+          </div>
+        </div>
+        
+        <div class="price-details">
+          <div class="price-detail-grid">
+            <div class="price-item">
+              <p class="label">Closing Price</p>
+              <p class="value">₹ 300.00</p>
+            </div>
+            <div class="price-item">
+              <p class="label">52 Week High</p>
+              <p class="value">₹ 340.00</p>
+            </div>
+            <div class="price-item">
+              <p class="label">Articles Analyzed</p>
+              <p class="value">300</p>
+            </div>
+            <div class="price-item">
+              <p class="label">Opening Price</p>
+              <p class="value">₹ 324.00</p>
+            </div>
+            <div class="price-item">
+              <p class="label">52 Week Low</p>
+              <p class="value">₹ 280.00</p>
+            </div>
+            <div class="price-item">
+              <p class="label">Sentiment</p>
+              <p class="value sentiment-positive">Positive</p>
+            </div>
+          </div>
+        </div>
+        
+        <div class="time-selector">
+          <div class="time-option active">1D</div>
+          <div class="time-option">1W</div>
+          <div class="time-option">1M</div>
+          <div class="time-option">3M</div>
+          <div class="time-option">6M</div>
+          <div class="time-option">1Y</div>
+        </div>
+        
+        <div class="chart-container">
+          <canvas id="stockChart"></canvas>
+        </div>
+      </div>
+    </div>
+    
+    <div class="stock-list-view">
+      <h2>Markets</h2>
+      
+      <div class="stock-grid">
+        <div class="stock-card">
+          <h3>ICICI Bank</h3>
+          <div class="stock-info">
+            <div class="stock-price">₹ 324.00</div>
+            <div class="stock-change positive">
+              <span>+23.05 (7.23%)</span>
+            </div>
+          </div>
+        </div>
+        
+        <div class="stock-card">
+          <h3>HDFC Bank</h3>
+          <div class="stock-info">
+            <div class="stock-price">₹ 1562.45</div>
+            <div class="stock-change positive">
+              <span>+23.20 (1.5%)</span>
+            </div>
+          </div>
+        </div>
+        
+        <div class="stock-card">
+          <h3>Reliance Industries</h3>
+          <div class="stock-info">
+            <div class="stock-price">₹ 2834.20</div>
+            <div class="stock-change positive">
+              <span>+21.95 (0.8%)</span>
+            </div>
+          </div>
+        </div>
+        
+        <div class="stock-card">
+          <h3>Infosys</h3>
+          <div class="stock-info">
+            <div class="stock-price">₹ 1467.75</div>
+            <div class="stock-change negative">
+              <span>-8.80 (0.6%)</span>
+            </div>
+          </div>
+        </div>
+        
+        <div class="stock-card">
+          <h3>Tata Consultancy</h3>
+          <div class="stock-info">
+            <div class="stock-price">₹ 3456.90</div>
+            <div class="stock-change positive">
+              <span>+40.15 (1.2%)</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Holdings popup (hidden by default) -->
+    <div class="holdings-popup" style="display: none;">
+      <div class="holdings-content">
+        <h3>Your Holdings</h3>
+        <button class="close-popup"><i class="fas fa-times"></i></button>
+        
+        <div class="portfolio-summary">
+          <div class="summary-item">
+            <p>Invested</p>
+            <p>₹0</p>
+          </div>
+          <div class="summary-item">
+            <p>Current Value</p>
+            <p>₹0</p>
+          </div>
+          <div class="summary-item total">
+            <p>Total Return</p>
+            <p>₹0 (0%)</p>
+          </div>
+        </div>
+        
+        <div class="holdings-list">
+          <!-- Holdings will be populated by JS -->
+          <div class="no-holdings">
+            <p>You don't have any holdings yet.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- First load the main script file that has the global finance data -->
+  <script src="script.js"></script>
+  <!-- Then load the investment script -->
+  <script src="investment.js"></script>
+</body>
+</html> 

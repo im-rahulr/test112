@@ -42,56 +42,213 @@
     <div id="income" class="section">
       <h2>Income & Expenses</h2>
       <button class="back-button">Back to Dashboard</button>
-      <div class="income-container">
-        <div class="income-card">
-          <h3>Monthly Income</h3>
-          <p class="amount">₹75,000</p>
+      
+      <!-- Monthly Finance Management Tabs -->
+      <div class="finance-tabs">
+        <div class="tab active" data-tab="overview">Overview</div>
+        <div class="tab" data-tab="budget">Budget Planning</div>
+        <div class="tab" data-tab="goals">Savings Goals</div>
+        <div class="tab" data-tab="calculator">Calculators</div>
+      </div>
+      
+      <div class="tab-content" id="overview-content">
+        <div class="income-container">
+          <div class="income-card">
+            <h3>Monthly Income</h3>
+            <p class="amount">₹75,000</p>
+          </div>
+          <div class="income-card">
+            <h3>Monthly Expenses</h3>
+            <p class="amount">₹45,000</p>
+          </div>
+          <div class="income-card">
+            <h3>Savings</h3>
+            <p class="amount">₹30,000</p>
+          </div>
         </div>
-        <div class="income-card">
-          <h3>Monthly Expenses</h3>
-          <p class="amount">₹45,000</p>
+        <div class="expenses-breakdown">
+          <h3>Expense Breakdown</h3>
+          <div class="expense-item">
+            <span>Housing</span>
+            <div class="progress-bar">
+              <div class="progress" style="width: 35%;"></div>
+            </div>
+            <span>₹15,750</span>
+          </div>
+          <div class="expense-item">
+            <span>Food</span>
+            <div class="progress-bar">
+              <div class="progress" style="width: 25%;"></div>
+            </div>
+            <span>₹11,250</span>
+          </div>
+          <div class="expense-item">
+            <span>Transportation</span>
+            <div class="progress-bar">
+              <div class="progress" style="width: 15%;"></div>
+            </div>
+            <span>₹6,750</span>
+          </div>
+          <div class="expense-item">
+            <span>Entertainment</span>
+            <div class="progress-bar">
+              <div class="progress" style="width: 10%;"></div>
+            </div>
+            <span>₹4,500</span>
+          </div>
+          <div class="expense-item">
+            <span>Others</span>
+            <div class="progress-bar">
+              <div class="progress" style="width: 15%;"></div>
+            </div>
+            <span>₹6,750</span>
+          </div>
         </div>
-        <div class="income-card">
-          <h3>Savings</h3>
-          <p class="amount">₹30,000</p>
+        
+        <div class="chart-container">
+          <h3>Monthly Spending Trends</h3>
+          <div class="spending-chart">
+            <canvas id="spendingChart"></canvas>
+          </div>
         </div>
       </div>
-      <div class="expenses-breakdown">
-        <h3>Expense Breakdown</h3>
-        <div class="expense-item">
-          <span>Housing</span>
-          <div class="progress-bar">
-            <div class="progress" style="width: 35%;"></div>
+      
+      <div class="tab-content hidden" id="budget-content">
+        <div class="budget-planner">
+          <h3>Budget Planning</h3>
+          <div class="budget-form">
+            <div class="form-group">
+              <label for="income-amount">Monthly Income</label>
+              <input type="number" id="income-amount" placeholder="Enter your monthly income">
+            </div>
+            
+            <h4>Expense Categories</h4>
+            <div class="expense-categories">
+              <div class="category-item">
+                <label for="housing-budget">Housing</label>
+                <input type="number" id="housing-budget" placeholder="0">
+                <div class="recommended">Recommended: 30-35%</div>
+              </div>
+              <div class="category-item">
+                <label for="food-budget">Food</label>
+                <input type="number" id="food-budget" placeholder="0">
+                <div class="recommended">Recommended: 20-25%</div>
+              </div>
+              <div class="category-item">
+                <label for="transport-budget">Transportation</label>
+                <input type="number" id="transport-budget" placeholder="0">
+                <div class="recommended">Recommended: 10-15%</div>
+              </div>
+              <div class="category-item">
+                <label for="entertainment-budget">Entertainment</label>
+                <input type="number" id="entertainment-budget" placeholder="0">
+                <div class="recommended">Recommended: 5-10%</div>
+              </div>
+              <div class="category-item">
+                <label for="savings-budget">Savings</label>
+                <input type="number" id="savings-budget" placeholder="0">
+                <div class="recommended">Recommended: 20%</div>
+              </div>
+              <div class="category-item">
+                <label for="others-budget">Others</label>
+                <input type="number" id="others-budget" placeholder="0">
+                <div class="recommended">Recommended: 10-15%</div>
+              </div>
+            </div>
+            
+            <button class="save-budget">Save Budget Plan</button>
           </div>
-          <span>₹15,750</span>
         </div>
-        <div class="expense-item">
-          <span>Food</span>
-          <div class="progress-bar">
-            <div class="progress" style="width: 25%;"></div>
+      </div>
+      
+      <div class="tab-content hidden" id="goals-content">
+        <div class="savings-goals">
+          <h3>Your Savings Goals</h3>
+          
+          <div class="goals-list">
+            <div class="goal-item">
+              <div class="goal-info">
+                <h4>Emergency Fund</h4>
+                <p>Target: ₹3,00,000</p>
+                <p>Saved: ₹1,50,000 (50%)</p>
+              </div>
+              <div class="goal-progress">
+                <div class="progress-bar">
+                  <div class="progress" style="width: 50%;"></div>
+                </div>
+              </div>
+              <div class="goal-actions">
+                <button class="add-funds"><i class="fas fa-plus"></i> Add Funds</button>
+                <button class="edit-goal"><i class="fas fa-edit"></i></button>
+              </div>
+            </div>
+            
+            <div class="goal-item">
+              <div class="goal-info">
+                <h4>New Car</h4>
+                <p>Target: ₹7,00,000</p>
+                <p>Saved: ₹2,10,000 (30%)</p>
+              </div>
+              <div class="goal-progress">
+                <div class="progress-bar">
+                  <div class="progress" style="width: 30%;"></div>
+                </div>
+              </div>
+              <div class="goal-actions">
+                <button class="add-funds"><i class="fas fa-plus"></i> Add Funds</button>
+                <button class="edit-goal"><i class="fas fa-edit"></i></button>
+              </div>
+            </div>
           </div>
-          <span>₹11,250</span>
+          
+          <div class="add-new-goal">
+            <button class="new-goal-btn"><i class="fas fa-plus"></i> Add New Goal</button>
+          </div>
         </div>
-        <div class="expense-item">
-          <span>Transportation</span>
-          <div class="progress-bar">
-            <div class="progress" style="width: 15%;"></div>
+      </div>
+      
+      <div class="tab-content hidden" id="calculator-content">
+        <div class="calculators">
+          <h3>Financial Calculators</h3>
+          
+          <div class="calculator-tabs">
+            <div class="calc-tab active" data-calc="sip">SIP Calculator</div>
+            <div class="calc-tab" data-calc="loan">Loan EMI</div>
+            <div class="calc-tab" data-calc="fd">Fixed Deposit</div>
           </div>
-          <span>₹6,750</span>
-        </div>
-        <div class="expense-item">
-          <span>Entertainment</span>
-          <div class="progress-bar">
-            <div class="progress" style="width: 10%;"></div>
+          
+          <div class="calculator-content" id="sip-calculator">
+            <h4>SIP Investment Calculator</h4>
+            <div class="calculator-form">
+              <div class="form-group">
+                <label for="monthly-investment">Monthly Investment (₹)</label>
+                <input type="number" id="monthly-investment" placeholder="5000">
+              </div>
+              <div class="form-group">
+                <label for="investment-period">Investment Period (Years)</label>
+                <input type="number" id="investment-period" placeholder="10">
+              </div>
+              <div class="form-group">
+                <label for="expected-return">Expected Annual Return (%)</label>
+                <input type="number" id="expected-return" placeholder="12">
+              </div>
+              <button class="calculate-btn">Calculate</button>
+            </div>
+            <div class="calculation-result">
+              <div class="result-card">
+                <h5>Invested Amount</h5>
+                <p class="result-value">₹0</p>
+              </div>
+              <div class="result-card">
+                <h5>Estimated Returns</h5>
+                <p class="result-value">₹0</p>
+              </div>
+              <div class="result-card">
+                <h5>Total Value</h5>
+                <p class="result-value">₹0</p>
+              </div>
+            </div>
           </div>
-          <span>₹4,500</span>
-        </div>
-        <div class="expense-item">
-          <span>Others</span>
-          <div class="progress-bar">
-            <div class="progress" style="width: 15%;"></div>
-          </div>
-          <span>₹6,750</span>
         </div>
       </div>
     </div>
@@ -121,41 +278,250 @@
     <div id="investment" class="section">
       <h2>Investment</h2>
       <button class="back-button">Back to Dashboard</button>
-      <div class="stocks-container">
-        <div class="stock-card">
-          <div class="stock-info">
-            <h3>HDFC Bank</h3>
-            <p class="stock-price">₹1,562.45</p>
+      
+      <div class="investment-tabs">
+        <div class="tab active" data-tab="market">Market</div>
+        <div class="tab" data-tab="portfolio">My Portfolio</div>
+        <div class="tab" data-tab="explore">Explore</div>
+      </div>
+      
+      <div class="tab-content" id="market-content">
+        <div class="market-summary">
+          <div class="index-card">
+            <h3>Sensex</h3>
+            <p class="index-value">70,450.25</p>
+            <p class="change increase">+450.25 (0.64%)</p>
           </div>
-          <div class="stock-change increase">
-            <span>+1.5%</span>
-          </div>
-        </div>
-        <div class="stock-card">
-          <div class="stock-info">
-            <h3>Reliance Industries</h3>
-            <p class="stock-price">₹2,834.20</p>
-          </div>
-          <div class="stock-change increase">
-            <span>+0.8%</span>
-          </div>
-        </div>
-        <div class="stock-card">
-          <div class="stock-info">
-            <h3>Infosys</h3>
-            <p class="stock-price">₹1,467.75</p>
-          </div>
-          <div class="stock-change decrease">
-            <span>-0.6%</span>
+          <div class="index-card">
+            <h3>Nifty 50</h3>
+            <p class="index-value">21,356.80</p>
+            <p class="change increase">+125.30 (0.59%)</p>
           </div>
         </div>
-        <div class="stock-card">
-          <div class="stock-info">
-            <h3>Tata Consultancy</h3>
-            <p class="stock-price">₹3,456.90</p>
+        
+        <div class="stocks-container">
+          <div class="stock-card interactive">
+            <div class="stock-info">
+              <h3>HDFC Bank</h3>
+              <p class="stock-price">₹1,562.45</p>
+            </div>
+            <div class="stock-change increase">
+              <span>+1.5%</span>
+            </div>
+            <div class="stock-actions">
+              <button class="trade-btn buy">Buy</button>
+              <button class="trade-btn sell">Sell</button>
+              <button class="details-btn"><i class="fas fa-info-circle"></i></button>
+            </div>
           </div>
-          <div class="stock-change increase">
-            <span>+1.2%</span>
+          <div class="stock-card interactive">
+            <div class="stock-info">
+              <h3>Reliance Industries</h3>
+              <p class="stock-price">₹2,834.20</p>
+            </div>
+            <div class="stock-change increase">
+              <span>+0.8%</span>
+            </div>
+            <div class="stock-actions">
+              <button class="trade-btn buy">Buy</button>
+              <button class="trade-btn sell">Sell</button>
+              <button class="details-btn"><i class="fas fa-info-circle"></i></button>
+            </div>
+          </div>
+          <div class="stock-card interactive">
+            <div class="stock-info">
+              <h3>Infosys</h3>
+              <p class="stock-price">₹1,467.75</p>
+            </div>
+            <div class="stock-change decrease">
+              <span>-0.6%</span>
+            </div>
+            <div class="stock-actions">
+              <button class="trade-btn buy">Buy</button>
+              <button class="trade-btn sell">Sell</button>
+              <button class="details-btn"><i class="fas fa-info-circle"></i></button>
+            </div>
+          </div>
+          <div class="stock-card interactive">
+            <div class="stock-info">
+              <h3>Tata Consultancy</h3>
+              <p class="stock-price">₹3,456.90</p>
+            </div>
+            <div class="stock-change increase">
+              <span>+1.2%</span>
+            </div>
+            <div class="stock-actions">
+              <button class="trade-btn buy">Buy</button>
+              <button class="trade-btn sell">Sell</button>
+              <button class="details-btn"><i class="fas fa-info-circle"></i></button>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="tab-content hidden" id="portfolio-content">
+        <div class="portfolio-summary">
+          <div class="summary-card">
+            <h3>Portfolio Value</h3>
+            <p class="value">₹5,45,320</p>
+          </div>
+          <div class="summary-card">
+            <h3>Today's Gain/Loss</h3>
+            <p class="value increase">+₹4,250 (0.78%)</p>
+          </div>
+          <div class="summary-card">
+            <h3>Overall Return</h3>
+            <p class="value increase">+₹45,320 (9.06%)</p>
+          </div>
+        </div>
+        
+        <div class="portfolio-holdings">
+          <h3>Your Holdings</h3>
+          <div class="holding-item">
+            <div class="holding-info">
+              <h4>HDFC Bank</h4>
+              <p>50 shares @ ₹1,520</p>
+            </div>
+            <div class="holding-value">
+              <p class="current-value">₹78,122.50</p>
+              <p class="profit increase">+₹2,122.50 (2.79%)</p>
+            </div>
+            <div class="holding-actions">
+              <button class="trade-btn buy">Buy More</button>
+              <button class="trade-btn sell">Sell</button>
+            </div>
+          </div>
+          <div class="holding-item">
+            <div class="holding-info">
+              <h4>Reliance Industries</h4>
+              <p>35 shares @ ₹2,750</p>
+            </div>
+            <div class="holding-value">
+              <p class="current-value">₹99,197.00</p>
+              <p class="profit increase">+₹2,947.00 (3.06%)</p>
+            </div>
+            <div class="holding-actions">
+              <button class="trade-btn buy">Buy More</button>
+              <button class="trade-btn sell">Sell</button>
+            </div>
+          </div>
+          <div class="holding-item">
+            <div class="holding-info">
+              <h4>Infosys</h4>
+              <p>45 shares @ ₹1,480</p>
+            </div>
+            <div class="holding-value">
+              <p class="current-value">₹66,048.75</p>
+              <p class="profit decrease">-₹551.25 (-0.83%)</p>
+            </div>
+            <div class="holding-actions">
+              <button class="trade-btn buy">Buy More</button>
+              <button class="trade-btn sell">Sell</button>
+            </div>
+          </div>
+        </div>
+        
+        <div class="portfolio-chart">
+          <h3>Portfolio Performance</h3>
+          <div class="chart-period">
+            <button class="period-btn active">1W</button>
+            <button class="period-btn">1M</button>
+            <button class="period-btn">3M</button>
+            <button class="period-btn">6M</button>
+            <button class="period-btn">1Y</button>
+            <button class="period-btn">All</button>
+          </div>
+          <div class="performance-chart">
+            <canvas id="portfolioChart"></canvas>
+          </div>
+        </div>
+      </div>
+      
+      <div class="tab-content hidden" id="explore-content">
+        <div class="investment-options">
+          <h3>Investment Options</h3>
+          
+          <div class="investment-types">
+            <div class="investment-card">
+              <div class="investment-icon">
+                <i class="fas fa-chart-pie"></i>
+              </div>
+              <h4>Mutual Funds</h4>
+              <p>Professional management and diversification with lower minimum investment.</p>
+              <button class="explore-btn">Explore Funds</button>
+            </div>
+            
+            <div class="investment-card">
+              <div class="investment-icon">
+                <i class="fas fa-building"></i>
+              </div>
+              <h4>Stocks</h4>
+              <p>Direct ownership in companies with potential for higher returns.</p>
+              <button class="explore-btn">Explore Stocks</button>
+            </div>
+            
+            <div class="investment-card">
+              <div class="investment-icon">
+                <i class="fas fa-landmark"></i>
+              </div>
+              <h4>Fixed Deposits</h4>
+              <p>Secure investment with guaranteed returns and low risk.</p>
+              <button class="explore-btn">Explore FDs</button>
+            </div>
+            
+            <div class="investment-card">
+              <div class="investment-icon">
+                <i class="fas fa-hand-holding-usd"></i>
+              </div>
+              <h4>Government Bonds</h4>
+              <p>Low-risk investments backed by the government with regular interest payments.</p>
+              <button class="explore-btn">Explore Bonds</button>
+            </div>
+          </div>
+        </div>
+        
+        <div class="recommended-investments">
+          <h3>Recommended for You</h3>
+          
+          <div class="recommended-list">
+            <div class="recommended-item">
+              <div class="rec-info">
+                <h4>HDFC Small Cap Fund</h4>
+                <p>Mutual Fund - Small Cap</p>
+                <p class="returns">3Y Return: 18.5%</p>
+              </div>
+              <div class="rec-rating">
+                <span class="stars">★★★★☆</span>
+                <span>4/5</span>
+              </div>
+              <button class="invest-btn">Invest Now</button>
+            </div>
+            
+            <div class="recommended-item">
+              <div class="rec-info">
+                <h4>Axis Bluechip Fund</h4>
+                <p>Mutual Fund - Large Cap</p>
+                <p class="returns">3Y Return: 12.8%</p>
+              </div>
+              <div class="rec-rating">
+                <span class="stars">★★★★★</span>
+                <span>5/5</span>
+              </div>
+              <button class="invest-btn">Invest Now</button>
+            </div>
+            
+            <div class="recommended-item">
+              <div class="rec-info">
+                <h4>SBI Corporate Bond Fund</h4>
+                <p>Debt Fund</p>
+                <p class="returns">3Y Return: 8.2%</p>
+              </div>
+              <div class="rec-rating">
+                <span class="stars">★★★★☆</span>
+                <span>4/5</span>
+              </div>
+              <button class="invest-btn">Invest Now</button>
+            </div>
           </div>
         </div>
       </div>
@@ -187,6 +553,7 @@
     </div>
   </div>
 
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script src="script.js"></script>
 </body>
 </html> 

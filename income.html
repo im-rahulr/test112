@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Financial Overview - Growthly</title>
+  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+  <style>
+    /* Page-specific styles */
+    .finance-container {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+    
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+    
+    .header h1 {
+      margin: 0;
+      font-size: 24px;
+    }
+    
+    .back-button {
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 4px;
+      text-decoration: none;
+      font-size: 14px;
+    }
+    
+    .finance-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+    
+    .balance-section {
+      background-color: #4CAF50;
+      color: white;
+      padding: 20px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+    }
+    
+    .balance-label {
+      font-size: 16px;
+      margin-bottom: 5px;
+    }
+    
+    .balance-amount {
+      font-size: 32px;
+      font-weight: bold;
+    }
+    
+    .balance-actions {
+      display: flex;
+      gap: 10px;
+      margin-top: 15px;
+    }
+    
+    .balance-btn, .expenses-btn {
+      background-color: rgba(255, 255, 255, 0.2);
+      border: none;
+      padding: 8px 16px;
+      border-radius: 4px;
+      color: white;
+      cursor: pointer;
+      font-size: 14px;
+      transition: background-color 0.3s;
+    }
+    
+    .balance-btn:hover, .expenses-btn:hover {
+      background-color: rgba(255, 255, 255, 0.3);
+    }
+    
+    .tabs {
+      display: flex;
+      border-bottom: 1px solid #ddd;
+      margin-bottom: 20px;
+    }
+    
+    .tab {
+      padding: 10px 20px;
+      cursor: pointer;
+      font-weight: 500;
+      border-bottom: 3px solid transparent;
+      transition: all 0.3s;
+    }
+    
+    .tab.active {
+      border-bottom-color: #4CAF50;
+      color: #4CAF50;
+    }
+    
+    .tab-content {
+      margin-bottom: 30px;
+    }
+    
+    .tab-pane {
+      display: none;
+    }
+    
+    .tab-pane.active {
+      display: block;
+    }
+    
+    /* Income Tab Styles */
+    .income-list, .goals-list {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
+    
+    .income-item, .goal-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 15px;
+      background-color: #f9f9f9;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    }
+    
+    .income-details h4, .goal-details h4 {
+      margin: 0 0 5px 0;
+      font-size: 16px;
+    }
+    
+    .income-details p, .goal-details p {
+      margin: 0;
+      color: #666;
+      font-size: 14px;
+    }
+    
+    .income-amount, .goal-status {
+      font-weight: bold;
+      color: #4CAF50;
+    }
+    
+    .goal-progress {
+      width: 150px;
+      height: 8px;
+      background-color: #e0e0e0;
+      border-radius: 4px;
+      overflow: hidden;
+      margin-bottom: 5px;
+    }
+    
+    .progress-bar {
+      height: 100%;
+      background-color: #4CAF50;
+      border-radius: 4px;
+    }
+    
+    .add-form {
+      margin-top: 20px;
+      background-color: #f9f9f9;
+      padding: 20px;
+      border-radius: 8px;
+    }
+    
+    .form-group {
+      margin-bottom: 15px;
+    }
+    
+    .form-group label {
+      display: block;
+      margin-bottom: 5px;
+      font-weight: 500;
+    }
+    
+    .form-group input {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      font-size: 16px;
+    }
+    
+    .form-actions {
+      display: flex;
+      justify-content: flex-end;
+    }
+    
+    .submit-btn {
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 16px;
+    }
+    
+    .savings-section {
+      margin-top: 20px;
+    }
+    
+    .savings-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 15px;
+    }
+    
+    .savings-amount {
+      font-size: 24px;
+      font-weight: bold;
+      color: #4CAF50;
+    }
+    
+    /* Expenses Tab Styles */
+    .expenses-container {
+      background-color: #f9f9f9;
+      padding: 20px;
+      border-radius: 8px;
+    }
+    
+    .expenses-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+    
+    .expenses-total {
+      font-size: 24px;
+      font-weight: bold;
+    }
+    
+    .expenses-list {
+      margin-bottom: 20px;
+    }
+    
+    .expense-category {
+      margin-bottom: 15px;
+    }
+    
+    .category-header {
+      display: flex;
+      justify-content: space-between;
+      padding: 10px 0;
+      border-bottom: 1px solid #ddd;
+      font-weight: 500;
+    }
+    
+    .category-items {
+      padding: 10px 0;
+    }
+    
+    .expense-item {
+      display: flex;
+      justify-content: space-between;
+      padding: 8px 0;
+      color: #666;
+    }
+    
+    .pay-button {
+      background-color: #f44336;
+      color: white;
+      border: none;
+      padding: 12px 24px;
+      border-radius: 4px;
+      font-size: 16px;
+      font-weight: 500;
+      cursor: pointer;
+      margin-top: 20px;
+      transition: background-color 0.3s;
+    }
+    
+    .pay-button:hover {
+      background-color: #e53935;
+    }
+    
+    .pay-button.disabled {
+      background-color: #9e9e9e;
+      cursor: not-allowed;
+    }
+    
+    /* Chart styles */
+    .chart-container {
+      margin-top: 20px;
+      height: 250px;
+    }
+    
+    /* Animation styles */
+    .fade-in {
+      animation: fadeIn 0.5s ease-in;
+    }
+    
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+  </style>
+</head>
+<body>
+  <div class="finance-container">
+    <div class="header">
+      <h1>Financial Overview</h1>
+      <a href="index.html" class="back-button">Back to Dashboard</a>
+    </div>
+    
+    <div class="balance-section">
+      <p class="balance-label">Current Balance</p>
+      <div class="balance-amount">₹75,000</div>
+      <div class="balance-actions">
+        <button class="balance-btn">View Breakdown</button>
+        <button class="expenses-btn">Monthly Budget</button>
+      </div>
+    </div>
+    
+    <div class="tabs">
+      <div class="tab active" data-tab="income">Income</div>
+      <div class="tab" data-tab="expenses">Expenses</div>
+      <div class="tab" data-tab="savings">Savings Goals</div>
+    </div>
+    
+    <div class="tab-content">
+      <!-- Income Tab -->
+      <div class="tab-pane active" data-tab="income">
+        <h3>Income Sources</h3>
+        <div class="income-list">
+          <div class="income-item">
+            <div class="income-details">
+              <h4>Monthly Salary</h4>
+              <p>Regular income</p>
+            </div>
+            <div class="income-amount">₹30,000</div>
+          </div>
+          <div class="income-item">
+            <div class="income-details">
+              <h4>Freelance Work</h4>
+              <p>Design project</p>
+            </div>
+            <div class="income-amount">₹15,000</div>
+          </div>
+          <div class="income-item">
+            <div class="income-details">
+              <h4>Interest Income</h4>
+              <p>Bank deposits</p>
+            </div>
+            <div class="income-amount">₹2,500</div>
+          </div>
+        </div>
+        
+        <div class="chart-container">
+          <canvas id="incomeChart" width="800" height="250"></canvas>
+        </div>
+        
+        <form id="add-income-form" class="add-form">
+          <h3>Add New Income</h3>
+          <div class="form-group">
+            <label for="income-source">Income Source</label>
+            <input type="text" id="income-source" placeholder="E.g., Bonus, Side hustle">
+          </div>
+          <div class="form-group">
+            <label for="income-amount">Amount (₹)</label>
+            <input type="number" id="income-amount" placeholder="Amount">
+          </div>
+          <div class="form-actions">
+            <button type="submit" class="submit-btn">Add Income</button>
+          </div>
+        </form>
+      </div>
+      
+      <!-- Expenses Tab -->
+      <div class="tab-pane" data-tab="expenses">
+        <div class="expenses-container">
+          <div class="expenses-header">
+            <h3>Monthly Expenses</h3>
+            <div class="expenses-total">₹20,000</div>
+          </div>
+          
+          <div class="expenses-list">
+            <div class="expense-category">
+              <div class="category-header">
+                <span>Housing</span>
+                <span>₹8,000</span>
+              </div>
+              <div class="category-items">
+                <div class="expense-item">
+                  <span>Rent</span>
+                  <span>₹7,000</span>
+                </div>
+                <div class="expense-item">
+                  <span>Utilities</span>
+                  <span>₹1,000</span>
+                </div>
+              </div>
+            </div>
+            
+            <div class="expense-category">
+              <div class="category-header">
+                <span>Food</span>
+                <span>₹5,000</span>
+              </div>
+              <div class="category-items">
+                <div class="expense-item">
+                  <span>Groceries</span>
+                  <span>₹3,000</span>
+                </div>
+                <div class="expense-item">
+                  <span>Dining out</span>
+                  <span>₹2,000</span>
+                </div>
+              </div>
+            </div>
+            
+            <div class="expense-category">
+              <div class="category-header">
+                <span>Transportation</span>
+                <span>₹3,000</span>
+              </div>
+              <div class="category-items">
+                <div class="expense-item">
+                  <span>Fuel</span>
+                  <span>₹2,000</span>
+                </div>
+                <div class="expense-item">
+                  <span>Public Transport</span>
+                  <span>₹1,000</span>
+                </div>
+              </div>
+            </div>
+            
+            <div class="expense-category">
+              <div class="category-header">
+                <span>Miscellaneous</span>
+                <span>₹4,000</span>
+              </div>
+              <div class="category-items">
+                <div class="expense-item">
+                  <span>Entertainment</span>
+                  <span>₹1,500</span>
+                </div>
+                <div class="expense-item">
+                  <span>Shopping</span>
+                  <span>₹1,500</span>
+                </div>
+                <div class="expense-item">
+                  <span>Other</span>
+                  <span>₹1,000</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <button id="pay-expenses-btn" class="pay-button">Pay Monthly Expenses</button>
+        </div>
+      </div>
+      
+      <!-- Savings Tab -->
+      <div class="tab-pane" data-tab="savings">
+        <div class="savings-header">
+          <h3>Total Savings</h3>
+          <div class="savings-amount">₹0</div>
+        </div>
+        
+        <div class="goals-list">
+          <!-- Savings goals will be added here dynamically -->
+        </div>
+        
+        <form id="add-savings-form" class="add-form">
+          <h3>Add Savings Goal</h3>
+          <div class="form-group">
+            <label for="goal-name">Goal Name</label>
+            <input type="text" id="goal-name" placeholder="E.g., Emergency Fund, New Laptop">
+          </div>
+          <div class="form-group">
+            <label for="goal-amount">Target Amount (₹)</label>
+            <input type="number" id="goal-amount" placeholder="Target amount">
+          </div>
+          <div class="form-actions">
+            <button type="submit" class="submit-btn">Create Goal</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+  
+  <!-- First load the main script file that has the global finance data -->
+  <script src="script.js"></script>
+  <!-- Then load the income script -->
+  <script src="income.js"></script>
+</body>
+</html> 
