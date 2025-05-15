@@ -8,10 +8,18 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
+  <!-- User Balance Display - Fixed at top -->
+  <div class="user-balance-container">
+    <div class="user-balance">
+      <i class="fas fa-wallet"></i>
+      <span>Balance: ₹2,45,320</span>
+    </div>
+  </div>
+
   <div class="container">
     <div id="homepage" class="section active">
       <h1 class="title">Growthly</h1>
-      <p class="subtitle">Your financial growth partner</p>
+      <p class="subtitle">Lets play!</p>
       <button id="playButton" class="play-button">
         <i class="fas fa-play"></i>
       </button>
@@ -35,6 +43,14 @@
         <div class="option" data-target="news">
           <i class="fas fa-globe"></i>
           <span>News</span>
+        </div>
+        <div class="option" data-target="goals">
+          <i class="fas fa-bullseye"></i>
+          <span>Goals</span>
+        </div>
+        <div class="option" data-target="transactions">
+          <i class="fas fa-history"></i>
+          <span>Transaction Log</span>
         </div>
       </div>
     </div>
@@ -551,9 +567,258 @@
         </div>
       </div>
     </div>
+
+    <div id="goals" class="section">
+      <h2>Financial Goals</h2>
+      <button class="back-button">Back to Dashboard</button>
+      
+      <div class="goals-container">
+        <div class="goals-header">
+          <h3>Your Goals</h3>
+          <button class="add-goal-btn"><i class="fas fa-plus"></i> Add New Goal</button>
+        </div>
+        
+        <div class="goals-list">
+          <div class="goal-item">
+            <div class="goal-icon">
+              <i class="fas fa-home"></i>
+            </div>
+            <div class="goal-details">
+              <h4>Buy a House</h4>
+              <p class="goal-target">Target: ₹50,00,000</p>
+              <div class="goal-progress-container">
+                <div class="goal-progress-bar">
+                  <div class="goal-progress" style="width: 35%;"></div>
+                </div>
+                <span class="goal-progress-text">₹17,50,000 saved (35%)</span>
+              </div>
+              <p class="goal-date">Target Date: December 2025</p>
+            </div>
+            <div class="goal-actions">
+              <button class="goal-edit-btn"><i class="fas fa-edit"></i></button>
+              <button class="goal-delete-btn"><i class="fas fa-trash"></i></button>
+            </div>
+          </div>
+          
+          <div class="goal-item">
+            <div class="goal-icon">
+              <i class="fas fa-car"></i>
+            </div>
+            <div class="goal-details">
+              <h4>New Car</h4>
+              <p class="goal-target">Target: ₹12,00,000</p>
+              <div class="goal-progress-container">
+                <div class="goal-progress-bar">
+                  <div class="goal-progress" style="width: 65%;"></div>
+                </div>
+                <span class="goal-progress-text">₹7,80,000 saved (65%)</span>
+              </div>
+              <p class="goal-date">Target Date: August 2023</p>
+            </div>
+            <div class="goal-actions">
+              <button class="goal-edit-btn"><i class="fas fa-edit"></i></button>
+              <button class="goal-delete-btn"><i class="fas fa-trash"></i></button>
+            </div>
+          </div>
+          
+          <div class="goal-item">
+            <div class="goal-icon">
+              <i class="fas fa-plane"></i>
+            </div>
+            <div class="goal-details">
+              <h4>Vacation</h4>
+              <p class="goal-target">Target: ₹2,50,000</p>
+              <div class="goal-progress-container">
+                <div class="goal-progress-bar">
+                  <div class="goal-progress" style="width: 80%;"></div>
+                </div>
+                <span class="goal-progress-text">₹2,00,000 saved (80%)</span>
+              </div>
+              <p class="goal-date">Target Date: May 2023</p>
+            </div>
+            <div class="goal-actions">
+              <button class="goal-edit-btn"><i class="fas fa-edit"></i></button>
+              <button class="goal-delete-btn"><i class="fas fa-trash"></i></button>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Add Goal Modal -->
+      <div id="add-goal-modal" class="modal">
+        <div class="modal-content">
+          <span class="close-modal">&times;</span>
+          <h3>Add New Goal</h3>
+          <form id="add-goal-form">
+            <div class="form-group">
+              <label for="goal-name">Goal Name</label>
+              <input type="text" id="goal-name" placeholder="e.g., New Car, Vacation, etc." required>
+            </div>
+            <div class="form-group">
+              <label for="goal-icon">Goal Icon</label>
+              <select id="goal-icon" required>
+                <option value="home">🏠 Home</option>
+                <option value="car">🚗 Car</option>
+                <option value="plane">✈️ Vacation</option>
+                <option value="graduation-cap">🎓 Education</option>
+                <option value="ring">💍 Wedding</option>
+                <option value="laptop">💻 Gadget</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="goal-amount">Target Amount (₹)</label>
+              <input type="number" id="goal-amount" placeholder="Amount" required>
+            </div>
+            <div class="form-group">
+              <label for="goal-current">Current Savings (₹)</label>
+              <input type="number" id="goal-current" placeholder="Current amount saved">
+            </div>
+            <div class="form-group">
+              <label for="goal-date">Target Date</label>
+              <input type="date" id="goal-date" required>
+            </div>
+            <button type="submit" class="submit-goal">Save Goal</button>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <div id="transactions" class="section">
+      <h2>Transaction Log</h2>
+      <button class="back-button">Back to Dashboard</button>
+      <div class="transaction-log-container">
+        <table id="transaction-table">
+          <thead>
+            <tr>
+              <th>Date</th>
+              <th>Type</th>
+              <th>Description</th>
+              <th>Amount</th>
+              <th>Balance</th>
+            </tr>
+          </thead>
+          <tbody>
+            <!-- Transactions will be dynamically inserted here -->
+          </tbody>
+        </table>
+      </div>
+    </div>
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script src="script.js"></script>
+  
+  <!-- Stock Details Modal -->
+  <div id="stock-details-modal" class="modal">
+    <div class="modal-content stock-modal-content">
+      <span class="close-modal">&times;</span>
+      <div class="stock-details-header">
+        <div class="stock-basic-info">
+          <h3 id="stock-name">Stock Name</h3>
+          <p id="stock-code">NSE: CODE</p>
+        </div>
+        <div class="stock-price-info">
+          <p id="stock-current-price">₹0.00</p>
+          <p id="stock-price-change" class="increase">+₹0.00 (0.00%)</p>
+        </div>
+      </div>
+      
+      <div class="stock-chart-container">
+        <div class="chart-period">
+          <button class="period-btn active">1D</button>
+          <button class="period-btn">1W</button>
+          <button class="period-btn">1M</button>
+          <button class="period-btn">3M</button>
+          <button class="period-btn">6M</button>
+          <button class="period-btn">1Y</button>
+          <button class="period-btn">5Y</button>
+        </div>
+        <div class="stock-chart">
+          <canvas id="stockChart"></canvas>
+        </div>
+      </div>
+      
+      <div class="stock-details-grid">
+        <div class="stock-detail-item">
+          <h4>Market Cap</h4>
+          <p id="stock-market-cap">₹0</p>
+        </div>
+        <div class="stock-detail-item">
+          <h4>P/E Ratio</h4>
+          <p id="stock-pe">0.00</p>
+        </div>
+        <div class="stock-detail-item">
+          <h4>EPS (TTM)</h4>
+          <p id="stock-eps">₹0.00</p>
+        </div>
+        <div class="stock-detail-item">
+          <h4>Dividend Yield</h4>
+          <p id="stock-dividend">0.00%</p>
+        </div>
+        <div class="stock-detail-item">
+          <h4>52-Week High</h4>
+          <p id="stock-52-high">₹0.00</p>
+        </div>
+        <div class="stock-detail-item">
+          <h4>52-Week Low</h4>
+          <p id="stock-52-low">₹0.00</p>
+        </div>
+        <div class="stock-detail-item">
+          <h4>Volume</h4>
+          <p id="stock-volume">0</p>
+        </div>
+        <div class="stock-detail-item">
+          <h4>Avg Volume</h4>
+          <p id="stock-avg-volume">0</p>
+        </div>
+      </div>
+      
+      <div class="stock-financials">
+        <h4>Key Financials</h4>
+        <table class="financials-table">
+          <thead>
+            <tr>
+              <th>Metric</th>
+              <th>FY 2022</th>
+              <th>FY 2021</th>
+              <th>FY 2020</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Revenue</td>
+              <td id="revenue-2022">₹0</td>
+              <td id="revenue-2021">₹0</td>
+              <td id="revenue-2020">₹0</td>
+            </tr>
+            <tr>
+              <td>Net Profit</td>
+              <td id="profit-2022">₹0</td>
+              <td id="profit-2021">₹0</td>
+              <td id="profit-2020">₹0</td>
+            </tr>
+            <tr>
+              <td>EPS</td>
+              <td id="eps-2022">₹0</td>
+              <td id="eps-2021">₹0</td>
+              <td id="eps-2020">₹0</td>
+            </tr>
+            <tr>
+              <td>Debt to Equity</td>
+              <td id="de-2022">0</td>
+              <td id="de-2021">0</td>
+              <td id="de-2020">0</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      
+      <div class="stock-actions-footer">
+        <button class="trade-btn buy large">Buy</button>
+        <button class="trade-btn sell large">Sell</button>
+        <button class="watchlist-btn"><i class="far fa-star"></i> Add to Watchlist</button>
+      </div>
+    </div>
+  </div>
 </body>
 </html> 

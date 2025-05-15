@@ -6,380 +6,565 @@ document.addEventListener('DOMContentLoaded', function() {
   const sections = document.querySelectorAll('.section');
   const tabs = document.querySelectorAll('.tab');
   const calcTabs = document.querySelectorAll('.calc-tab');
+  const marketStocksContainer = document.querySelector('#market-content .stocks-container');
+  const stockDetailsModal = document.getElementById('stock-details-modal');
+  const modalCloseBtns = document.querySelectorAll('.close-modal');
+  const addGoalBtn = document.querySelector('.add-goal-btn');
+  const addGoalModal = document.getElementById('add-goal-modal');
+  const addGoalForm = document.getElementById('add-goal-form');
+  const balanceDisplaySpan = document.querySelector('.user-balance span');
+  const transactionTableBody = document.querySelector('#transaction-table tbody');
+  
+  // App State
+  let currentUserBalance = 245320;
+  let transactions = [];
+  let userPortfolio = {
+    'HDFC Bank': { shares: 50, avgPrice: 1520, name: 'HDFC Bank' },
+    'Reliance Industries': { shares: 35, avgPrice: 2750, name: 'Reliance Industries' },
+    'Infosys': { shares: 45, avgPrice: 1480, name: 'Infosys' },
+  };
+  let userGoals = [
+    { name: 'Emergency Fund', icon: 'shield-alt', targetAmount: 300000, currentSavings: 150000, targetDate: '2024-12-31' },
+    { name: 'New Car', icon: 'car', targetAmount: 700000, currentSavings: 210000, targetDate: '2025-06-30' }
+  ];
   
   // Charts
   let spendingChart = null;
   let portfolioChart = null;
+  let stockChart = null;
   
-  // Play button click event
-  playButton.addEventListener('click', function() {
-    showSection('dashboard');
-  });
+  // Initial UI Updates & Data Setup
+  function initializeApp() {
+    updateBalanceDisplay();
+    renderPortfolioHoldings(); 
+    renderGoals();
+    renderMarketStocks();
+    addTransaction('Initial Balance', 'User starting account balance', 0, true);
+    // Example transactions - these will now correctly use the balance from userPortfolio for stock value
+    const hdfcInitialValue = (userPortfolio['HDFC Bank']?.shares || 0) * (userPortfolio['HDFC Bank']?.avgPrice || 0);
+    const relianceInitialValue = (userPortfolio['Reliance Industries']?.shares || 0) * (userPortfolio['Reliance Industries']?.avgPrice || 0);
+    const infyInitialValue = (userPortfolio['Infosys']?.shares || 0) * (userPortfolio['Infosys']?.avgPrice || 0);
+    currentUserBalance -= (hdfcInitialValue + relianceInitialValue + infyInitialValue); // Adjust initial balance to reflect portfolio cost
+    addTransaction('Portfolio Setup', 'Cost of initial HDFC Bank shares', -hdfcInitialValue, true);
+    addTransaction('Portfolio Setup', 'Cost of initial Reliance Industries shares', -relianceInitialValue, true);
+    addTransaction('Portfolio Setup', 'Cost of initial Infosys shares', -infyInitialValue, true);
+
+    addTransaction('Salary Deposit', 'Monthly Salary', 75000, true); // Example income
+    currentUserBalance += 75000; // Manually adjust for this initial income after portfolio deduction
+
+    renderTransactionLog(); 
+    updateBalanceDisplay(); // Final balance update after all initial setup
+  }
   
-  // Back buttons click events
+  initializeApp();
+  
+  // Event Listeners
+  playButton.addEventListener('click', () => showSection('dashboard'));
+  
   backButtons.forEach(button => {
     button.addEventListener('click', function() {
-      showSection('dashboard');
+      const currentSectionId = this.closest('.section').id;
+      if (stockDetailsModal.style.display === 'flex') {
+        closeModal(stockDetailsModal);
+        // No section change, just close modal. Assumes user is in 'investment' section.
+      } else if ([ 'income', 'article', 'investment', 'news', 'goals', 'transactions'].includes(currentSectionId)){
+        showSection('dashboard');
+      } else {
+        showSection('dashboard'); 
+      }
     });
   });
   
-  // Dashboard option click events
   dashboardOptions.forEach(option => {
     option.addEventListener('click', function() {
       const target = this.getAttribute('data-target');
       showSection(target);
-      
-      // Initialize charts when sections are shown
-      if (target === 'income') {
-        initSpendingChart();
-      } else if (target === 'investment') {
-        initPortfolioChart();
+      if (target === 'income') initSpendingChart();
+      else if (target === 'investment') {
+        initPortfolioChart(); 
+        renderPortfolioHoldings(); 
+        renderMarketStocks(); 
       }
+      else if (target === 'transactions') renderTransactionLog();
+      else if (target === 'goals') renderGoals(); 
     });
   });
   
-  // Tab navigation
   tabs.forEach(tab => {
     tab.addEventListener('click', function() {
       const parentElement = this.parentElement;
       const tabTarget = this.getAttribute('data-tab');
-      
-      // Remove active class from all tabs in the same container
-      parentElement.querySelectorAll('.tab').forEach(t => {
-        t.classList.remove('active');
-      });
-      
-      // Add active class to clicked tab
+      parentElement.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
       this.classList.add('active');
-      
-      // Find all content containers
-      let contentContainers;
-      if (parentElement.classList.contains('finance-tabs')) {
-        contentContainers = document.querySelectorAll('#income .tab-content');
-      } else if (parentElement.classList.contains('investment-tabs')) {
-        contentContainers = document.querySelectorAll('#investment .tab-content');
-      }
-      
-      // Hide all content
-      if (contentContainers) {
-        contentContainers.forEach(container => {
-          container.classList.add('hidden');
-        });
-      }
-      
-      // Show the target content
+      const contentContainerSelector = parentElement.classList.contains('finance-tabs') ? '#income .tab-content' : '#investment .tab-content';
+      document.querySelectorAll(contentContainerSelector).forEach(c => c.classList.add('hidden'));
       const targetContent = document.getElementById(tabTarget + '-content');
       if (targetContent) {
         targetContent.classList.remove('hidden');
-        
-        // Initialize charts if needed
-        if (tabTarget === 'overview') {
-          initSpendingChart();
-        } else if (tabTarget === 'portfolio') {
-          initPortfolioChart();
-        }
+        if (tabTarget === 'overview') initSpendingChart();
+        else if (tabTarget === 'portfolio') { initPortfolioChart(); renderPortfolioHoldings(); }
+        else if (tabTarget === 'market') renderMarketStocks();
       }
     });
   });
   
-  // Calculator tabs
   calcTabs.forEach(tab => {
     tab.addEventListener('click', function() {
       const calcType = this.getAttribute('data-calc');
-      
-      // Remove active class from all calculator tabs
-      document.querySelectorAll('.calc-tab').forEach(t => {
-        t.classList.remove('active');
-      });
-      
-      // Add active class to clicked tab
+      this.parentElement.querySelectorAll('.calc-tab').forEach(t => t.classList.remove('active'));
       this.classList.add('active');
-      
-      // Hide all calculator content
-      const calculatorContents = document.querySelectorAll('.calculator-content');
-      calculatorContents.forEach(content => {
-        content.style.display = 'none';
-      });
-      
-      // Show the target calculator
+      this.closest('.calculators').querySelectorAll('.calculator-content').forEach(c => c.style.display = 'none');
       const targetCalc = document.getElementById(calcType + '-calculator');
-      if (targetCalc) {
-        targetCalc.style.display = 'block';
-      }
+      if (targetCalc) targetCalc.style.display = 'block';
     });
   });
   
-  // Calculate button click for SIP calculator
-  const calculateBtn = document.querySelector('.calculate-btn');
-  if (calculateBtn) {
-    calculateBtn.addEventListener('click', function() {
-      calculateSIP();
+  document.querySelector('.calculate-btn')?.addEventListener('click', calculateSIP);
+  document.querySelector('.save-budget')?.addEventListener('click', saveBudgetPlan);
+  
+  // Event delegation for dynamically created stock cards in market view
+  if(marketStocksContainer){
+    marketStocksContainer.addEventListener('click', function(e){
+        const target = e.target;
+        const stockCard = target.closest('.stock-card.interactive');
+        if (!stockCard) return;
+
+        const stockName = stockCard.querySelector('h3').textContent;
+
+        if(target.closest('.trade-btn')){
+            const action = target.closest('.trade-btn').classList.contains('buy') ? 'buy' : 'sell';
+            const stockPrice = parseFloat(target.closest('.trade-btn').getAttribute('data-price'));
+            openTradeModal(stockName, action, stockPrice);
+        } else if (target.closest('.details-btn')){
+            showStockDetails(stockName);
+        } else {
+            // Click on card itself (not buttons)
+            showStockDetails(stockName);
+        }
     });
   }
-  
-  // Budget planner save button
-  const saveBudgetBtn = document.querySelector('.save-budget');
-  if (saveBudgetBtn) {
-    saveBudgetBtn.addEventListener('click', function() {
-      saveBudgetPlan();
-    });
-  }
-  
-  // Add Funds to Savings Goal
-  const addFundsBtns = document.querySelectorAll('.add-funds');
-  addFundsBtns.forEach(btn => {
-    btn.addEventListener('click', function() {
-      const goalItem = this.closest('.goal-item');
-      addFundsToGoal(goalItem);
-    });
+
+  modalCloseBtns.forEach(btn => btn.addEventListener('click', function() { closeModal(this.closest('.modal')); }));
+  addGoalBtn?.addEventListener('click', () => { 
+    addGoalForm.reset(); 
+    addGoalModal.removeAttribute('data-editing-goal-name'); 
+    openModal(addGoalModal);
   });
-  
-  // Trade buttons click events
-  const tradeBtns = document.querySelectorAll('.trade-btn');
-  tradeBtns.forEach(btn => {
-    btn.addEventListener('click', function() {
-      const action = this.classList.contains('buy') ? 'buy' : 'sell';
-      const stockName = this.closest('.stock-card, .holding-item').querySelector('h3, h4').textContent;
-      showTradeModal(stockName, action);
-    });
-  });
-  
-  // Period buttons for portfolio chart
-  const periodBtns = document.querySelectorAll('.period-btn');
-  periodBtns.forEach(btn => {
-    btn.addEventListener('click', function() {
-      document.querySelectorAll('.period-btn').forEach(b => {
-        b.classList.remove('active');
-      });
-      this.classList.add('active');
-      
-      const period = this.textContent;
-      updatePortfolioChart(period);
-    });
-  });
-  
-  // Function to show a specific section
+  addGoalForm?.addEventListener('submit', handleGoalFormSubmit);
+
+  // Core Functions: Navigation, Balance, Transactions
   function showSection(sectionId) {
-    // Hide all sections
-    sections.forEach(section => {
-      section.classList.remove('active');
-    });
-    
-    // Show the target section
+    sections.forEach(section => section.classList.remove('active'));
     const targetSection = document.getElementById(sectionId);
     if (targetSection) {
       targetSection.classList.add('active');
-      
-      // Add animation class
       targetSection.style.animation = 'none';
-      targetSection.offsetHeight; // Trigger reflow
+      targetSection.offsetHeight; 
       targetSection.style.animation = 'fadeIn 0.5s ease forwards';
     }
   }
   
-  // Initialize spending chart
+  function updateBalanceDisplay() {
+    if (balanceDisplaySpan) {
+      balanceDisplaySpan.textContent = `₹${currentUserBalance.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
+    }
+  }
+  
+  function addTransaction(type, description, amount, isInitial = false) {
+    let newBalanceAfterTx = currentUserBalance + amount;
+    if (isInitial && type === 'Initial Balance') {
+        newBalanceAfterTx = currentUserBalance; // Initial balance doesn't change itself from a zero transaction
+    } else if (isInitial) {
+        // For other initial transactions, this will be the balance *after* this specific setup transaction
+        // The global currentUserBalance is managed by initializeApp for setup items.
+    } else {
+        currentUserBalance += amount; // For runtime transactions, update global balance immediately
+    }
+
+    transactions.push({
+      date: new Date().toLocaleDateString('en-IN'),
+      time: new Date().toLocaleTimeString('en-IN', {hour: '2-digit', minute:'2-digit'}),
+      type,
+      description,
+      amount, 
+      balanceAfter: newBalanceAfterTx 
+    });
+    
+    if (!isInitial) {
+        updateBalanceDisplay();
+    }
+    // Always render the log if the transaction log page is active or if it's an initial setup
+    if (document.getElementById('transactions')?.classList.contains('active') || isInitial) {
+        renderTransactionLog(); 
+    }
+  }
+  
+  function renderTransactionLog() {
+    if (!transactionTableBody) return;
+    transactionTableBody.innerHTML = ''; 
+    [...transactions].reverse().forEach(tx => {
+      const row = transactionTableBody.insertRow();
+      row.insertCell().textContent = `${tx.date} ${tx.time}`;
+      row.insertCell().textContent = tx.type;
+      row.insertCell().textContent = tx.description;
+      const amountCell = row.insertCell();
+      amountCell.textContent = `${tx.amount < 0 ? '-' : '+'}₹${Math.abs(tx.amount).toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
+      amountCell.className = tx.amount < 0 ? 'amount-debit' : 'amount-credit';
+      row.insertCell().textContent = `₹${tx.balanceAfter.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
+    });
+  }
+  
+  // Stock Trading & Portfolio
+  function openTradeModal(stockName, action, price) {
+    const quantity = parseInt(prompt(`Enter quantity to ${action} ${stockName} at ₹${price.toFixed(2)}:`, "10"));
+    if (isNaN(quantity) || quantity <= 0) {
+      alert('Invalid quantity.');
+      return;
+    }
+    if (action === 'buy') buyStock(stockName, quantity, price);
+    else if (action === 'sell') sellStock(stockName, quantity, price);
+  }
+  
+  function buyStock(stockName, quantity, pricePerShare) {
+    const totalCost = quantity * pricePerShare;
+    if (currentUserBalance < totalCost) {
+      alert('Insufficient balance to buy shares.');
+      return;
+    }
+    addTransaction('Stock Purchase', `Bought ${quantity} ${stockName} @ ₹${pricePerShare.toFixed(2)}`, -totalCost);
+    const stockData = getMockMarketData()[stockName] || {name: stockName}; // Get full stock data if possible
+    if (userPortfolio[stockName]) {
+      const oldShares = userPortfolio[stockName].shares;
+      const oldAvgPrice = userPortfolio[stockName].avgPrice;
+      userPortfolio[stockName].shares += quantity;
+      userPortfolio[stockName].avgPrice = ((oldShares * oldAvgPrice) + (quantity * pricePerShare)) / userPortfolio[stockName].shares;
+    } else {
+      userPortfolio[stockName] = { shares: quantity, avgPrice: pricePerShare, name: stockData.name };
+    }
+    alert(`Successfully bought ${quantity} shares of ${stockName}.`);
+    renderPortfolioHoldings();
+    if (portfolioChart) updatePortfolioChart(document.querySelector('#portfolio-content .chart-period .period-btn.active')?.textContent || '1W');
+  }
+  
+  function sellStock(stockName, quantity, pricePerShare) {
+    if (!userPortfolio[stockName] || userPortfolio[stockName].shares < quantity) {
+      alert('Not enough shares to sell.');
+      return;
+    }
+    const totalProceeds = quantity * pricePerShare;
+    addTransaction('Stock Sale', `Sold ${quantity} ${stockName} @ ₹${pricePerShare.toFixed(2)}`, totalProceeds);
+    userPortfolio[stockName].shares -= quantity;
+    if (userPortfolio[stockName].shares === 0) {
+      delete userPortfolio[stockName];
+    }
+    alert(`Successfully sold ${quantity} shares of ${stockName}.`);
+    renderPortfolioHoldings();
+    if (portfolioChart) updatePortfolioChart(document.querySelector('#portfolio-content .chart-period .period-btn.active')?.textContent || '1W');
+  }
+  
+  function renderPortfolioHoldings() {
+    const portfolioHoldingsContainer = document.querySelector('#portfolio-content .portfolio-holdings');
+    if (!portfolioHoldingsContainer) return;
+    let holdingsHTML = '<h3>Your Holdings</h3>';
+    let currentTotalPortfolioValue = 0;
+    let totalInvestedValue = 0;
+    const currentMarketPrices = getMarketDataForPortfolio();
+
+    for (const stockName in userPortfolio) {
+        const holding = userPortfolio[stockName];
+        const currentPrice = currentMarketPrices[stockName] ? currentMarketPrices[stockName].price : holding.avgPrice;
+        const currentValue = holding.shares * currentPrice;
+        const investedValue = holding.shares * holding.avgPrice;
+        currentTotalPortfolioValue += currentValue;
+        totalInvestedValue += investedValue;
+        const profitLoss = currentValue - investedValue;
+        const profitLossPercent = (investedValue > 0) ? (profitLoss / investedValue) * 100 : 0;
+        holdingsHTML += `
+            <div class="holding-item" data-stock-name="${stockName}">
+                <div class="holding-info"><h4>${holding.name}</h4><p>${holding.shares} shares @ ₹${holding.avgPrice.toFixed(2)}</p></div>
+                <div class="holding-value"><p class="current-value">₹${currentValue.toLocaleString(undefined, {mf:2,xf:2})}</p><p class="profit ${profitLoss >= 0 ? 'increase' : 'decrease'}">${profitLoss >= 0 ? '+' : ''}₹${Math.abs(profitLoss).toLocaleString(undefined,{mf:2,xf:2})} (${profitLossPercent.toFixed(2)}%)</p></div>
+                <div class="holding-actions"><button class="trade-btn buy" data-price="${currentPrice}">Buy More</button><button class="trade-btn sell" data-price="${currentPrice}">Sell</button></div>
+            </div>`;
+    }
+    if(Object.keys(userPortfolio).length === 0) holdingsHTML += '<p>You have no holdings in your portfolio.</p>';
+    portfolioHoldingsContainer.innerHTML = holdingsHTML;
+
+    const summaryCards = document.querySelectorAll('#portfolio-content .portfolio-summary .summary-card p.value');
+    if (summaryCards.length >= 3) {
+        summaryCards[0].textContent = `₹${currentTotalPortfolioValue.toLocaleString(undefined,{mf:2,xf:2})}`;
+        const randomFluctuation = (Math.random() - 0.5) * 0.02 * currentTotalPortfolioValue;
+        summaryCards[1].textContent = `${randomFluctuation >=0 ? '+':'-'}₹${Math.abs(randomFluctuation).toLocaleString(undefined,{mf:2,xf:2})} (${(currentTotalPortfolioValue > 0 ? (randomFluctuation/currentTotalPortfolioValue*100) : 0).toFixed(2)}%)`;
+        summaryCards[1].className = `value ${randomFluctuation >= 0 ? 'increase' : 'decrease'}`;
+        const overallReturn = currentTotalPortfolioValue - totalInvestedValue;
+        summaryCards[2].textContent = `${overallReturn >=0 ? '+':'-'}₹${Math.abs(overallReturn).toLocaleString(undefined,{mf:2,xf:2})} (${(totalInvestedValue > 0 ? (overallReturn/totalInvestedValue*100):0).toFixed(2)}%)`;
+        summaryCards[2].className = `value ${overallReturn >= 0 ? 'increase' : 'decrease'}`;
+    }
+    // Add event listeners to portfolio trade buttons using delegation on parent
+    portfolioHoldingsContainer.addEventListener('click', function(e){
+        if(e.target.classList.contains('trade-btn')){
+            const action = e.target.classList.contains('buy') ? 'buy' : 'sell';
+            const stockName = e.target.closest('.holding-item').getAttribute('data-stock-name');
+            const stockPrice = parseFloat(e.target.getAttribute('data-price'));
+            openTradeModal(stockName, action, stockPrice);
+        }
+    });
+}
+
+function getMarketDataForPortfolio() { 
+    const marketData = getMockMarketData();
+    let portfolioStockData = {};
+    for(const stockKey in marketData){ portfolioStockData[marketData[stockKey].name] = marketData[stockKey]; }
+    for (const stockName in userPortfolio) {
+        if (!portfolioStockData[stockName]) {
+            portfolioStockData[stockName] = { name: stockName, price: userPortfolio[stockName].avgPrice, changePercent: 0 };
+        }
+    }
+    return portfolioStockData;
+}
+
+function renderMarketStocks() {
+    if (!marketStocksContainer) return;
+    marketStocksContainer.innerHTML = ''; 
+    const marketData = getMockMarketData();
+    for (const stockKey in marketData) {
+        const stock = marketData[stockKey];
+        const stockCard = document.createElement('div');
+        stockCard.className = 'stock-card interactive';
+        stockCard.innerHTML = `
+            <div class="stock-info"><h3>${stock.name}</h3><p class="stock-price">₹${stock.price.toFixed(2)}</p></div>
+            <div class="stock-change ${stock.changePercent >= 0 ? 'increase' : 'decrease'}"><span>${stock.changePercent >= 0 ? '+' : ''}${stock.changePercent.toFixed(1)}%</span></div>
+            <div class="stock-actions"><button class="trade-btn buy" data-price="${stock.price}">Buy</button><button class="trade-btn sell" data-price="${stock.price}">Sell</button><button class="details-btn"><i class="fas fa-info-circle"></i></button></div>`;
+        marketStocksContainer.appendChild(stockCard);
+    }
+}
+  // Charting Functions
   function initSpendingChart() {
-    const ctx = document.getElementById('spendingChart');
-    if (!ctx) return;
-    
-    if (spendingChart) {
-      spendingChart.destroy();
-    }
-    
-    spendingChart = new Chart(ctx, {
-      type: 'line',
-      data: {
-        labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
-        datasets: [
-          {
-            label: 'Income',
-            data: [72000, 73000, 75000, 74000, 75000, 75000],
-            borderColor: '#4CAF50',
-            backgroundColor: 'rgba(76, 175, 80, 0.1)',
-            tension: 0.4,
-            fill: true
-          },
-          {
-            label: 'Expenses',
-            data: [42000, 44000, 43000, 45000, 46000, 45000],
-            borderColor: '#F44336',
-            backgroundColor: 'rgba(244, 67, 54, 0.1)',
-            tension: 0.4,
-            fill: true
-          }
-        ]
-      },
-      options: {
-        responsive: true,
-        plugins: {
-          legend: {
-            position: 'top',
-          },
-          title: {
-            display: true,
-            text: 'Income vs Expenses Trend'
-          }
-        },
-        scales: {
-          y: {
-            beginAtZero: true,
-            ticks: {
-              callback: function(value) {
-                return '₹' + value.toLocaleString();
-              }
-            }
-          }
-        }
-      }
-    });
+    const ctx = document.getElementById('spendingChart'); if (!ctx) return;
+    if (spendingChart) spendingChart.destroy();
+    spendingChart = new Chart(ctx, { type: 'line', data: { labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'], datasets: [{ label: 'Income', data: [75000,78000,70000,80000,72000,77000], borderColor: '#4CAF50', backgroundColor: 'rgba(76,175,80,0.1)', tension: 0.4, fill: true }, { label: 'Expenses', data: [45000,42000,50000,40000,48000,46000], borderColor: '#F44336', backgroundColor: 'rgba(244,67,54,0.1)', tension: 0.4, fill: true }] }, options: { responsive: true, plugins: { legend: { position: 'top' }, title: { display: true, text: 'Income vs Expenses (Last 6 Months)' }}, scales: { y: { beginAtZero: false, ticks: { callback: value => '₹' + value.toLocaleString() }}} }});
   }
-  
-  // Initialize portfolio chart
+
   function initPortfolioChart() {
-    const ctx = document.getElementById('portfolioChart');
-    if (!ctx) return;
-    
-    if (portfolioChart) {
-      portfolioChart.destroy();
-    }
-    
-    portfolioChart = new Chart(ctx, {
-      type: 'line',
-      data: {
-        labels: ['Day 1', 'Day 2', 'Day 3', 'Day 4', 'Day 5', 'Day 6', 'Day 7'],
-        datasets: [{
-          label: 'Portfolio Value',
-          data: [540000, 541200, 543500, 544800, 542300, 543700, 545320],
-          borderColor: '#4CAF50',
-          backgroundColor: 'rgba(76, 175, 80, 0.1)',
-          tension: 0.4,
-          fill: true
-        }]
-      },
-      options: {
-        responsive: true,
-        plugins: {
-          legend: {
-            position: 'top',
-          },
-          title: {
-            display: true,
-            text: '1 Week Performance'
-          }
-        },
-        scales: {
-          y: {
-            ticks: {
-              callback: function(value) {
-                return '₹' + value.toLocaleString();
-              }
-            }
-          }
-        }
-      }
-    });
+    const ctx = document.getElementById('portfolioChart'); if (!ctx) return;
+    if (portfolioChart) portfolioChart.destroy();
+    portfolioChart = new Chart(ctx, { type: 'line', data: { labels: [], datasets: [{ label: 'Portfolio Value', data: [], borderColor: '#4CAF50', backgroundColor: 'rgba(76,175,80,0.1)', tension: 0.4, fill: true }] }, options: { responsive: true, plugins: { legend: { position: 'top' }, title: { display: true, text: 'Portfolio Performance' }}, scales: { y: { ticks: { callback: value => '₹' + value.toLocaleString() }}} }});
+    updatePortfolioChart(document.querySelector('#portfolio-content .chart-period .period-btn.active')?.textContent || '1W');
   }
-  
-  // Update portfolio chart based on selected period
+
   function updatePortfolioChart(period) {
     if (!portfolioChart) return;
-    
-    let labels = [];
-    let data = [];
-    let title = '';
-    
-    switch(period) {
-      case '1W':
-        labels = ['Day 1', 'Day 2', 'Day 3', 'Day 4', 'Day 5', 'Day 6', 'Day 7'];
-        data = [540000, 541200, 543500, 544800, 542300, 543700, 545320];
-        title = '1 Week Performance';
-        break;
-      case '1M':
-        labels = ['Week 1', 'Week 2', 'Week 3', 'Week 4'];
-        data = [540000, 545000, 547000, 545320];
-        title = '1 Month Performance';
-        break;
-      case '3M':
-        labels = ['Month 1', 'Month 2', 'Month 3'];
-        data = [520000, 532000, 545320];
-        title = '3 Month Performance';
-        break;
-      case '6M':
-        labels = ['Month 1', 'Month 2', 'Month 3', 'Month 4', 'Month 5', 'Month 6'];
-        data = [500000, 510000, 520000, 532000, 540000, 545320];
-        title = '6 Month Performance';
-        break;
-      case '1Y':
-        labels = ['Q1', 'Q2', 'Q3', 'Q4'];
-        data = [480000, 500000, 525000, 545320];
-        title = '1 Year Performance';
-        break;
-      case 'All':
-        labels = ['2020', '2021', '2022', '2023'];
-        data = [400000, 450000, 500000, 545320];
-        title = 'All Time Performance';
-        break;
+    let labels = []; let data = []; let titleText = '';
+    const currentPFValue = getCurrentPortfolioValue();
+    let historyPoints = [];
+    let days = 7;
+    if (period === '1M') days = 30; else if (period === '3M') days = 90; else if (period === '6M') days = 180; else if (period === '1Y') days = 365; else if (period === 'All') days = 365 * 2; // Max 2 years back for mock
+
+    let val = currentPFValue;
+    for (let i = 0; i < days; i++) {
+        if(i > 0) val /= (1 + (Math.random() * 0.01 - 0.005)); // Small daily fluctuation for history
+        historyPoints.unshift(Math.max(0, val)); // Ensure no negative value
+        if (days <= 30) labels.unshift(i === 0 ? 'Today' : `${i}d ago`);
+        else if (days <= 365) labels.unshift(i === 0 ? 'Today' : `${Math.floor(i/7)}w ago`);
+        else labels.unshift(i === 0 ? 'Today' : `${Math.floor(i/30)}m ago`);
     }
+    // Simplify labels for longer periods
+    if (days > 30) labels = labels.filter((_,idx) => idx % Math.floor(days/10) === 0 || idx === labels.length-1); // Show about 10 labels + today
+    if (days > 30) historyPoints = historyPoints.filter((_,idx) => idx % Math.floor(days/10) === 0 || idx === historyPoints.length-1);
+    data = historyPoints;
+    titleText = `${period} Performance`;
     
     portfolioChart.data.labels = labels;
     portfolioChart.data.datasets[0].data = data;
-    portfolioChart.options.plugins.title.text = title;
+    portfolioChart.options.plugins.title.text = titleText;
     portfolioChart.update();
   }
-  
-  // Calculate SIP returns
-  function calculateSIP() {
-    const monthlyInvestment = parseFloat(document.getElementById('monthly-investment').value) || 0;
-    const years = parseFloat(document.getElementById('investment-period').value) || 0;
-    const expectedReturn = parseFloat(document.getElementById('expected-return').value) || 0;
-    
-    const months = years * 12;
-    const monthlyRate = expectedReturn / 12 / 100;
-    
-    // SIP formula: M × (((1 + r)^n - 1) / r) × (1 + r)
-    const amount = monthlyInvestment * ((Math.pow(1 + monthlyRate, months) - 1) / monthlyRate) * (1 + monthlyRate);
-    
-    const investedAmount = monthlyInvestment * months;
-    const estimatedReturns = amount - investedAmount;
-    
-    // Update results
-    const resultElements = document.querySelectorAll('.result-value');
-    resultElements[0].textContent = '₹' + Math.round(investedAmount).toLocaleString();
-    resultElements[1].textContent = '₹' + Math.round(estimatedReturns).toLocaleString();
-    resultElements[2].textContent = '₹' + Math.round(amount).toLocaleString();
+
+  function getCurrentPortfolioValue() {
+    let total = 0;
+    const currentMarketPrices = getMarketDataForPortfolio();
+    for (const stockName in userPortfolio) {
+        const holding = userPortfolio[stockName];
+        const currentPrice = currentMarketPrices[stockName] ? currentMarketPrices[stockName].price : holding.avgPrice;
+        total += holding.shares * currentPrice;
+    }
+    return total;
   }
   
-  // Save budget plan
-  function saveBudgetPlan() {
-    // In a real app, this would save to backend
-    alert('Budget plan saved successfully!');
+  // SIP & Budget (no balance impact currently)
+  function calculateSIP() { const mi=parseFloat(document.getElementById('monthly-investment').value)||0, y=parseFloat(document.getElementById('investment-period').value)||0, er=parseFloat(document.getElementById('expected-return').value)||0, m=y*12, mr=er/12/100, amt=mi*((Math.pow(1+mr,m)-1)/mr)*(1+mr), ia=mi*m, esr=amt-ia; const res=document.querySelectorAll('.result-value'); res[0].textContent='₹'+Math.round(ia).toLocaleString(); res[1].textContent='₹'+Math.round(esr).toLocaleString(); res[2].textContent='₹'+Math.round(amt).toLocaleString(); }
+  function saveBudgetPlan() { alert('Budget plan saved (simulation)!'); }
+  
+  // Stock Details Modal & Chart
+  function showStockDetails(stockName) {
+    const modal = stockDetailsModal; if (!modal) return;
+    const allStockData = getMockMarketData();
+    const stock = allStockData[stockName] || userPortfolio[stockName] || { name: stockName, code: 'NSE: UNKNOWN', price: 1000, changePercent: 0 }; 
+    const price = stock.price || (userPortfolio[stockName] ? userPortfolio[stockName].avgPrice : 1000);
+
+    modal.querySelector('#stock-name').textContent = stock.name || stockName;
+    modal.querySelector('#stock-code').textContent = stock.code || 'NSE: UNKNOWN';
+    modal.querySelector('#stock-current-price').textContent = `₹${price.toFixed(2)}`;
+    const priceChangeEl = modal.querySelector('#stock-price-change');
+    const changeVal = price * ((stock.changePercent || 0) / 100);
+    priceChangeEl.textContent = `${changeVal >= 0 ? '+' : ''}₹${Math.abs(changeVal).toFixed(2)} (${(stock.changePercent || 0).toFixed(2)}%)`;
+    priceChangeEl.className = (stock.changePercent || 0) >= 0 ? 'increase' : 'decrease';
+    
+    modal.querySelector('#stock-market-cap').textContent = stock.marketCap || getRandomFinancial('marketCap');
+    modal.querySelector('#stock-pe').textContent = (stock.pe || getRandomFinancial('pe')).toString();
+    modal.querySelector('#stock-eps').textContent = `₹${(stock.eps || getRandomFinancial('eps')).toString()}`;
+    modal.querySelector('#stock-dividend').textContent = `${(stock.dividend || getRandomFinancial('dividend')).toString()}%`;
+    modal.querySelector('#stock-52-high').textContent = `₹${(stock.high52 || getRandomFinancial('high52')).toString()}`;
+    modal.querySelector('#stock-52-low').textContent = `₹${(stock.low52 || getRandomFinancial('low52')).toString()}`;
+    modal.querySelector('#stock-volume').textContent = stock.volume || getRandomFinancial('volume').toString();
+    modal.querySelector('#stock-avg-volume').textContent = stock.avgVolume || getRandomFinancial('avgVolume').toString();
+
+    ['2022', '2021', '2020'].forEach(year => {
+      modal.querySelector(`#revenue-${year}`).textContent = getRandomFinancial('revenue');
+      modal.querySelector(`#profit-${year}`).textContent = getRandomFinancial('profit');
+      modal.querySelector(`#eps-${year}`).textContent = getRandomFinancial('eps');
+      modal.querySelector(`#de-${year}`).textContent = getRandomFinancial('de');
+    });
+    initStockDetailChart(stockName, price); 
+    openModal(modal);
+    modal.querySelector('.stock-actions-footer .buy').onclick = () => openTradeModal(stockName, 'buy', price);
+    modal.querySelector('.stock-actions-footer .sell').onclick = () => openTradeModal(stockName, 'sell', price);
+  }
+
+  function getMockMarketData() { 
+    return {
+      'HDFC Bank': { name: 'HDFC Bank', price: 1570.25, changePercent: 0.5, code: 'NSE:HDFCBANK', marketCap: '₹8.80L Cr', pe: 22.9, eps: 68.55, dividend: 1.22, high52: 1790.00, low52: 1330.50, volume: '48.2 L', avgVolume: '40.1 L' },
+      'Reliance Industries': { name: 'Reliance Industries', price: 2855.60, changePercent: 1.2, code: 'NSE:RELIANCE', marketCap: '₹19.25L Cr', pe: 31.8, eps: 90.10, dividend: 0.75, high52: 2980.00, low52: 2300.00, volume: '65.0 L', avgVolume: '60.5 L' },
+      'Infosys': { name: 'Infosys', price: 1450.80, changePercent: -0.8, code: 'NSE:INFY', marketCap: '₹6.15L Cr', pe: 25.0, eps: 58.00, dividend: 1.85, high52: 1600.50, low52: 1250.00, volume: '35.5 L', avgVolume: '33.0 L' },
+      'Tata Consultancy': { name: 'Tata Consultancy', price: 3480.00, changePercent: 0.9, code: 'NSE:TCS', marketCap: '₹12.75L Cr', pe: 28.9, eps: 120.80, dividend: 2.25, high52: 3720.00, low52: 3100.00, volume: '28.0 L', avgVolume: '25.5 L' },
+      'ICICI Bank': { name: 'ICICI Bank', price: 950.75, changePercent: 1.1, code: 'NSE:ICICIBANK', marketCap: '₹6.70L Cr', pe: 20.5, eps: 46.30, dividend: 1.0, high52: 1000.00, low52: 700.00, volume: '55.0 L', avgVolume: '50.0 L' },
+    };
+  }
+
+  function getRandomFinancial(type) {
+    switch(type) {
+      case 'revenue': return `₹${(Math.random()*40000+15000).toFixed(0)} Cr`; case 'profit': return `₹${(Math.random()*7000+1500).toFixed(0)} Cr`;
+      case 'eps': return (Math.random()*80+25).toFixed(2); case 'de': return (Math.random()*1.2+0.2).toFixed(2);
+      case 'marketCap': return `₹${(Math.random()*800000+200000).toFixed(0)} Cr`; case 'pe': return (Math.random()*25+12).toFixed(1);
+      case 'dividend': return (Math.random()*2.5+0.8).toFixed(2); case 'high52': return (Math.random()*1500+1200).toFixed(2);
+      case 'low52': return (Math.random()*1000+600).toFixed(2); case 'volume': return `${(Math.random()*80+15).toFixed(1)} L`;
+      case 'avgVolume': return `${(Math.random()*70+25).toFixed(1)} L`; default: return 'N/A';
+    }
+  }
+
+  function initStockDetailChart(stockName, currentPrice) { 
+    const ctx = document.getElementById('stockChart'); if (!ctx) return;
+    if (stockChart) stockChart.destroy();
+    let price = currentPrice || 1000; const labels = []; const data = [];
+    let historicPrice = price;
+    for (let i = 29; i >= 0; i--) { 
+      labels.unshift(i === 0 ? 'Today' : `${i}d`); 
+      if (i < 29) historicPrice /= (1 + (Math.random() * 0.04 - 0.02));
+      data.unshift(Math.max(0, historicPrice)); 
+    }
+    data[29] = price; // Ensure today's price is accurate
+    stockChart = new Chart(ctx, { type: 'line', data: { labels, datasets: [{ label: stockName+' Price', data, borderColor: '#2196F3', backgroundColor: 'rgba(33,150,243,0.1)', tension: 0.1, fill: true, pointRadius:1, borderWidth:1.5 }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, tooltip: { callbacks: { label: ctx => `₹${ctx.raw.toFixed(2)}` }}}, scales: { x: { display:true, ticks:{ autoSkip:true, maxTicksLimit:10 }}, y: { display:true, ticks:{ callback: val => `₹${val.toLocaleString()}` }}} , interaction:{ intersect:false, mode:'index'}}});
+  }
+
+  // Goals Management
+  function handleGoalFormSubmit(e) {
+    e.preventDefault();
+    const editingGoalName = addGoalModal.getAttribute('data-editing-goal-name');
+    const goalName = document.getElementById('goal-name').value.trim();
+    const icon = document.getElementById('goal-icon').value;
+    const target = parseFloat(document.getElementById('goal-amount').value);
+    const current = parseFloat(document.getElementById('goal-current').value) || 0;
+    const date = document.getElementById('goal-date').value;
+    if (!goalName || isNaN(target) || target <= 0 || !date || current < 0 || current > target) {
+      alert('Invalid goal data. Check amounts and ensure name/date are set.'); return;
+    }
+    const existingGoal = userGoals.find(g => g.name.toLowerCase() === goalName.toLowerCase());
+    if (editingGoalName) { // Editing
+        if (existingGoal && existingGoal.name !== editingGoalName) { alert('Goal name already exists.'); return; }
+        const goalIdx = userGoals.findIndex(g => g.name === editingGoalName);
+        if (goalIdx !== -1) userGoals[goalIdx] = { name: goalName, icon, targetAmount: target, currentSavings: current, targetDate: date };
+    } else { // Adding new
+        if (existingGoal) { alert('Goal name already exists.'); return; }
+        userGoals.push({ name: goalName, icon, targetAmount: target, currentSavings: current, targetDate: date });
+    }
+    renderGoals(); closeModal(addGoalModal);
+  }
+
+  function renderGoals() {
+    const container = document.querySelector('#goals .goals-list'); if (!container) return;
+    container.innerHTML = '';
+    userGoals.forEach(goal => {
+      const progress = Math.min(100, (goal.currentSavings / goal.targetAmount * 100)).toFixed(0);
+      const dateStr = new Date(goal.targetDate + 'T00:00:00').toLocaleDateString('en-US', {y:'numeric',m:'long',d:'numeric'});
+      const el = document.createElement('div'); el.className = 'goal-item'; el.dataset.goalName = goal.name;
+      el.innerHTML = `
+        <div class="goal-icon"><i class="fas fa-${goal.icon || 'bullseye'}"></i></div>
+        <div class="goal-details"><h4>${goal.name}</h4><p class="goal-target">Target: ₹${goal.targetAmount.toLocaleString()}</p>
+          <div class="goal-progress-container"><div class="goal-progress-bar"><div class="goal-progress" style="width:${progress}%;"></div></div><span class="goal-progress-text">₹${goal.currentSavings.toLocaleString()} saved (${progress}%)</span></div>
+          <p class="goal-date">Target: ${dateStr}</p></div>
+        <div class="goal-actions"><button class="add-funds-to-goal-btn"><i class="fas fa-plus"></i> Add</button><button class="goal-edit-btn"><i class="fas fa-edit"></i></button><button class="goal-delete-btn"><i class="fas fa-trash"></i></button></div>`;
+      container.appendChild(el);
+    });
+    // Add event listeners using delegation on parent container
+    container.addEventListener('click', function(e){
+        const target = e.target.closest('button');
+        if(!target) return;
+        const goalItem = target.closest('.goal-item');
+        const goalName = goalItem.dataset.goalName;
+
+        if(target.classList.contains('add-funds-to-goal-btn')) handleAddFundsToGoalClick(goalName);
+        else if(target.classList.contains('goal-edit-btn')) handleEditGoalClick(goalName);
+        else if(target.classList.contains('goal-delete-btn')) handleDeleteGoalClick(goalName);
+    });
   }
   
-  // Add funds to savings goal
-  function addFundsToGoal(goalItem) {
-    // In a real app, this would open a modal to add funds
-    // For now, just simulate adding ₹10,000
-    const goalInfo = goalItem.querySelector('.goal-info');
-    const targetText = goalInfo.querySelector('p:nth-child(2)').textContent;
-    const savedText = goalInfo.querySelector('p:nth-child(3)').textContent;
-    
-    const target = parseInt(targetText.replace(/[^\d]/g, ''));
-    const currentSaved = parseInt(savedText.match(/₹([\d,]+)/)[1].replace(/,/g, ''));
-    const newAmount = currentSaved + 10000;
-    const newPercentage = Math.round((newAmount / target) * 100);
-    
-    // Update the text
-    goalInfo.querySelector('p:nth-child(3)').textContent = `Saved: ₹${newAmount.toLocaleString()} (${newPercentage}%)`;
-    
-    // Update the progress bar
-    goalItem.querySelector('.progress').style.width = `${newPercentage}%`;
-    
-    alert(`₹10,000 added to your goal. New balance: ₹${newAmount.toLocaleString()}`);
+  function handleAddFundsToGoalClick(goalName) {
+    const amountText = prompt(`Amount to add to "${goalName}":`); if (amountText === null) return;
+    const amount = parseFloat(amountText);
+    if (isNaN(amount) || amount <= 0) { alert('Invalid amount.'); return; }
+    if (currentUserBalance < amount) { alert('Insufficient balance.'); return; }
+    const goal = userGoals.find(g => g.name === goalName);
+    if (goal) {
+      goal.currentSavings = Math.min(goal.targetAmount, goal.currentSavings + amount);
+      addTransaction('Goal Saving', `Added to ${goalName}`, -amount);
+      renderGoals();
+    } else alert('Goal not found.');
   }
-  
-  // Show trade modal
-  function showTradeModal(stockName, action) {
-    // In a real app, this would open a modal for trading
-    alert(`${action.toUpperCase()} ${stockName} - Trading functionality would open here`);
+
+  function handleEditGoalClick(goalName) {
+    const goal = userGoals.find(g => g.name === goalName);
+    if (goal) {
+      addGoalForm.querySelector('#goal-name').value = goal.name;
+      addGoalForm.querySelector('#goal-icon').value = goal.icon;
+      addGoalForm.querySelector('#goal-amount').value = goal.targetAmount;
+      addGoalForm.querySelector('#goal-current').value = goal.currentSavings;
+      addGoalForm.querySelector('#goal-date').value = goal.targetDate; 
+      addGoalModal.setAttribute('data-editing-goal-name', goal.name);
+      openModal(addGoalModal);
+    }
+  }
+
+  function handleDeleteGoalClick(goalName) {
+    if (confirm(`Delete goal "${goalName}"?`)) {
+      userGoals = userGoals.filter(g => g.name !== goalName);
+      renderGoals();
+    }
+  }
+
+  // Modal Utilities
+  function openModal(modal) {
+    if (!modal) return;
+    modal.style.display = 'flex';
+    const handler = e => { if (e.target === modal) closeModal(modal); };
+    modal.internalWindowClickHandler = handler; // Store for removal
+    window.addEventListener('click', handler);
+  }
+
+  function closeModal(modal) {
+    if (!modal) return;
+    modal.style.display = 'none';
+    if (modal.internalWindowClickHandler) {
+      window.removeEventListener('click', modal.internalWindowClickHandler);
+      delete modal.internalWindowClickHandler;
+    }
   }
 }); 
