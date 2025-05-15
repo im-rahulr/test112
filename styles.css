@@ -1321,7 +1321,7 @@ h1, h2, h3 {
   position: absolute;
   left: 50%;
   transform: translateX(-50%);
-  bottom: 30px;
+  bottom:-90%;
   margin: 0;
 }
 
