@@ -369,6 +369,7 @@ document.addEventListener('DOMContentLoaded', function() {
       alert('Insufficient balance to buy shares.');
       return;
     }
+    currentUserBalance -= totalCost; // Update balance
     addTransaction('Stock Purchase', `Bought ${quantity} ${stockName} @ ₹${pricePerShare.toFixed(2)}`, -totalCost);
     const stockData = getMockMarketData()[stockName] || {name: stockName}; // Get full stock data if possible
     if (userPortfolio[stockName]) {
@@ -390,6 +391,7 @@ document.addEventListener('DOMContentLoaded', function() {
       return;
     }
     const totalProceeds = quantity * pricePerShare;
+    currentUserBalance += totalProceeds; // Update balance
     addTransaction('Stock Sale', `Sold ${quantity} ${stockName} @ ₹${pricePerShare.toFixed(2)}`, totalProceeds);
     userPortfolio[stockName].shares -= quantity;
     if (userPortfolio[stockName].shares === 0) {

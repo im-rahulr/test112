@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clause - Contract Management Tool</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Arial', sans-serif;
+        }
+
+        body {
+            background-color: #f8f9fa;
+            color: #202124;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* Header styling */
+        header {
+            background-color: #f8f9fa;
+            padding: 20px 0;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            font-weight: bold;
+            font-size: 20px;
+            color: #202124;
+            text-decoration: none;
+        }
+
+        .logo-img {
+            background-color: #4CAF50;
+            color: white;
+            width: 32px;
+            height: 32px;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 8px;
+        }
+
+        .nav-links {
+            display: flex;
+            list-style: none;
+        }
+
+        .nav-links li {
+            margin: 0 15px;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: #202124;
+            font-size: 14px;
+            position: relative;
+        }
+
+        .nav-links a::after {
+            content: '';
+            display: inline-block;
+            margin-left: 5px;
+            width: 10px;
+            height: 10px;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23202124'%3E%3Cpath d='M7 10l5 5 5-5z'/%3E%3C/svg%3E");
+            background-size: contain;
+        }
+
+        .auth-buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border-radius: 5px;
+            font-weight: 500;
+            font-size: 14px;
+            cursor: pointer;
+        }
+
+        .btn-outline {
+            border: 1px solid #ddd;
+            background: white;
+            color: #202124;
+        }
+
+        .btn-primary {
+            background-color: #0F482E;
+            color: white;
+            border: none;
+        }
+
+        /* Hero section styling */
+        .hero {
+            padding: 60px 0;
+            text-align: center;
+            position: relative;
+            background: linear-gradient(to bottom, #f8f9fa 0%, #f1f1f1 100%);
+            overflow: hidden;
+        }
+
+        .hero-grid {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            background-image: linear-gradient(#ddd 1px, transparent 1px), 
+                              linear-gradient(90deg, #ddd 1px, transparent 1px);
+            background-size: 50px 50px;
+            z-index: 0;
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 1;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .create-badge {
+            display: inline-flex;
+            align-items: center;
+            background-color: #f9f9f9;
+            border-radius: 20px;
+            padding: 8px 16px;
+            margin-bottom: 20px;
+            font-size: 14px;
+        }
+
+        .create-badge span {
+            margin-left: 8px;
+        }
+
+        .lightning-icon {
+            color: #4CAF50;
+        }
+
+        .highlight {
+            border-bottom: 4px solid #BAFD37;
+        }
+
+        .hero h1 {
+            font-size: 48px;
+            line-height: 1.2;
+            margin-bottom: 30px;
+            color: #0F482E;
+        }
+
+        .hero p {
+            font-size: 18px;
+            line-height: 1.6;
+            margin-bottom: 40px;
+            color: #555;
+        }
+
+        .hero-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 30px;
+        }
+
+        .avatar {
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            overflow: hidden;
+            background-color: #ddd;
+            position: absolute;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+
+        .avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .avatar1 {
+            top: 120px;
+            left: 20%;
+        }
+
+        .avatar2 {
+            top: 120px;
+            right: 20%;
+        }
+
+        .avatar3 {
+            bottom: 120px;
+            left: 20%;
+        }
+
+        .avatar4 {
+            bottom: 120px;
+            right: 20%;
+        }
+
+        .arrow {
+            position: absolute;
+            width: 20px;
+            height: 20px;
+        }
+        
+        /* Stats section styling */
+        .stats {
+            padding: 60px 0;
+            background-color: #f8f9fa;
+            text-align: center;
+        }
+
+        .stats-container {
+            display: flex;
+            justify-content: space-evenly;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .stat-item {
+            padding: 20px;
+        }
+
+        .stat-number {
+            font-size: 42px;
+            font-weight: bold;
+            color: #0F482E;
+            margin-bottom: 10px;
+        }
+
+        .stat-label {
+            font-size: 16px;
+            color: #555;
+        }
+
+        /* Feature section styling */
+        .features {
+            padding: 80px 0;
+            background-color: #0F482E;
+            color: white;
+        }
+
+        .features-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .features-text h2 {
+            font-size: 36px;
+            margin-bottom: 20px;
+        }
+
+        .features-text .highlight {
+            border-bottom: 4px solid #BAFD37;
+        }
+
+        .features-buttons {
+            display: flex;
+            gap: 15px;
+        }
+
+        .btn-light {
+            background-color: white;
+            color: #0F482E;
+        }
+
+        .btn-neon {
+            background-color: #BAFD37;
+            color: #0F482E;
+            border: none;
+        }
+
+        /* Footer styling */
+        footer {
+            background-color: #0F482E;
+            color: white;
+            padding: 60px 0 40px;
+        }
+
+        .footer-container {
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+        }
+
+        .footer-logo {
+            margin-bottom: 20px;
+        }
+
+        .footer-contact {
+            margin-bottom: 30px;
+        }
+
+        .footer-contact div {
+            margin: 10px 0;
+            display: flex;
+            align-items: center;
+            font-size: 14px;
+        }
+
+        .footer-icon {
+            margin-right: 10px;
+            color: #aaa;
+        }
+
+        .footer-columns {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 60px;
+        }
+
+        .footer-column h3 {
+            font-size: 16px;
+            margin-bottom: 20px;
+        }
+
+        .footer-links {
+            list-style: none;
+        }
+
+        .footer-links li {
+            margin-bottom: 12px;
+        }
+
+        .footer-links a {
+            color: #ddd;
+            text-decoration: none;
+            font-size: 14px;
+        }
+
+        .footer-links a:hover {
+            color: white;
+        }
+
+        .special-item::after {
+            content: "*";
+            margin-left: 3px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header Section -->
+    <header>
+        <div class="container">
+            <nav>
+                <a href="#" class="logo">
+                    <div class="logo-img">C</div>
+                    Clause
+                </a>
+                <ul class="nav-links">
+                    <li><a href="#">Solutions</a></li>
+                    <li><a href="#">Customers</a></li>
+                    <li><a href="#">Pricing</a></li>
+                </ul>
+                <div class="auth-buttons">
+                    <button class="btn btn-outline">Log In</button>
+                    <button class="btn btn-primary">Start Now</button>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-grid"></div>
+        <div class="container">
+            <div class="hero-content">
+                <div class="create-badge">
+                    <span class="lightning-icon">⚡</span>
+                    <span>CREATE FOR FAST</span>
+                </div>
+                <h1>One tool to <span class="highlight">manage</span> contracts and your team</h1>
+                <p>Clause helps legal teams work faster, smarter and more efficiently, delivering the visibility and data-driven insights to mitigate risk and ensure compliance.</p>
+                <div class="hero-buttons">
+                    <button class="btn btn-primary">Start for Free</button>
+                    <button class="btn btn-outline">Get a Demo</button>
+                </div>
+            </div>
+            
+            <!-- Avatar images positioned around -->
+            <div class="avatar avatar1">
+                <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='35' r='25' fill='%23FFCDB2'/%3E%3Ccircle cx='50' cy='110' r='50' fill='%23B5838D'/%3E%3C/svg%3E" alt="Avatar">
+            </div>
+            <div class="avatar avatar2">
+                <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='35' r='25' fill='%23E5989B'/%3E%3Ccircle cx='50' cy='110' r='50' fill='%236D6875'/%3E%3C/svg%3E" alt="Avatar">
+            </div>
+            <div class="avatar avatar3">
+                <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='35' r='25' fill='%23FFB4A2'/%3E%3Ccircle cx='50' cy='110' r='50' fill='%23B5838D'/%3E%3C/svg%3E" alt="Avatar">
+            </div>
+            <div class="avatar avatar4">
+                <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='35' r='25' fill='%23FFCDB2'/%3E%3Ccircle cx='50' cy='110' r='50' fill='%236D6875'/%3E%3C/svg%3E" alt="Avatar">
+            </div>
+        </div>
+    </section>
+
+    <!-- Stats Section -->
+    <section class="stats">
+        <div class="container">
+            <p class="stats-header">Head of Strategy at Mailchimp</p>
+            <div class="stats-container">
+                <div class="stat-item">
+                    <div class="stat-number">2021</div>
+                    <div class="stat-label">Clause Founded</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number">50K+</div>
+                    <div class="stat-label">Active Users</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number">1k+</div>
+                    <div class="stat-label">Company Partners</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="features">
+        <div class="container features-container">
+            <div class="features-text">
+                <h2>Discover the full scale of <span class="highlight">Clause</span> capabilities</h2>
+            </div>
+            <div class="features-buttons">
+                <button class="btn btn-light">Get a Demo</button>
+                <button class="btn btn-neon">Start for Free</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer Section -->
+    <footer>
+        <div class="container footer-container">
+            <div>
+                <div class="footer-logo">
+                    <a href="#" class="logo" style="color: white;">
+                        <div class="logo-img">C</div>
+                        Clause
+                    </a>
+                </div>
+                <div class="footer-contact">
+                    <div>
+                        <span class="footer-icon">✉️</span>
+                        hello@clause.com
+                    </div>
+                    <div>
+                        <span class="footer-icon">📞</span>
+                        +621 987 654 321
+                    </div>
+                </div>
+            </div>
+            <div class="footer-columns">
+                <div class="footer-column">
+                    <h3>Solution</h3>
+                    <ul class="footer-links">
+                        <li><a href="#">Why Cequence</a></li>
+                        <li><a href="#">Features</a></li>
+                        <li><a href="#">OpenAI</a></li>
+                        <li><a href="#">Technology</a></li>
+                        <li><a href="#">Security</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h3>Customers</h3>
+                    <ul class="footer-links">
+                        <li><a href="#">Procurement</a></li>
+                        <li><a href="#">Sales</a></li>
+                        <li><a href="#">Legal</a></li>
+                        <li><a href="#">Medium</a></li>
+                        <li><a href="#">Enterprise</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h3>Resources</h3>
+                    <ul class="footer-links">
+                        <li><a href="#">Pricing</a></li>
+                        <li><a href="#">Contact Sales</a></li>
+                        <li><a href="#" class="special-item">Changelog</a></li>
+                        <li><a href="#">Blog</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Add simple animation for the avatars
+        document.addEventListener('DOMContentLoaded', function() {
+            const avatars = document.querySelectorAll('.avatar');
+            
+            avatars.forEach(avatar => {
+                // Apply a small random animation to each avatar
+                const randomDelay = Math.random() * 3;
+                const randomDuration = 2 + Math.random() * 2;
+                
+                avatar.style.animation = `float ${randomDuration}s ease-in-out ${randomDelay}s infinite alternate`;
+            });
+        });
+
+        // Add float animation to the stylesheet
+        const style = document.createElement('style');
+        style.innerHTML = `
+            @keyframes float {
+                0% {
+                    transform: translateY(0);
+                }
+                100% {
+                    transform: translateY(-10px);
+                }
+            }
+        `;
+        document.head.appendChild(style);
+    </script>
+</body>
+</html>
