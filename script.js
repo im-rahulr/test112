@@ -14,6 +14,9 @@ document.addEventListener('DOMContentLoaded', function() {
   const addGoalForm = document.getElementById('add-goal-form');
   const balanceDisplaySpan = document.querySelector('.user-balance span');
   const transactionTableBody = document.querySelector('#transaction-table tbody');
+  // Add reference to income section goals tab
+  const incomeSectionGoalsList = document.querySelector('#goals-content .goals-list');
+  const incomeSectionAddGoalBtn = document.querySelector('#goals-content .new-goal-btn');
   
   // App State
   let currentUserBalance = 245320;
@@ -178,6 +181,7 @@ document.addEventListener('DOMContentLoaded', function() {
     updateBalanceDisplay();
     renderPortfolioHoldings(); 
     renderGoals();
+    renderIncomeSectionGoals();
     renderMarketStocks();
     addTransaction('Initial Balance', 'User starting account balance', 0, true);
     // Example transactions - these will now correctly use the balance from userPortfolio for stock value
@@ -245,6 +249,7 @@ document.addEventListener('DOMContentLoaded', function() {
         else if (tabTarget === 'portfolio') { initPortfolioChart(); renderPortfolioHoldings(); }
         else if (tabTarget === 'market') renderMarketStocks();
       }
+      if (tabTarget === 'goals') renderIncomeSectionGoals();
     });
   });
   
@@ -290,6 +295,13 @@ document.addEventListener('DOMContentLoaded', function() {
     openModal(addGoalModal);
   });
   addGoalForm?.addEventListener('submit', handleGoalFormSubmit);
+
+  // Add event listener for the "Add New Goal" button in income section
+  incomeSectionAddGoalBtn?.addEventListener('click', () => {
+    addGoalForm.reset();
+    addGoalModal.removeAttribute('data-editing-goal-name');
+    openModal(addGoalModal);
+  });
 
   // Core Functions: Navigation, Balance, Transactions
   function showSection(sectionId) {
@@ -625,7 +637,9 @@ function renderMarketStocks() {
         if (existingGoal) { alert('Goal name already exists.'); return; }
         userGoals.push({ name: goalName, icon, targetAmount: target, currentSavings: current, targetDate: date });
     }
-    renderGoals(); closeModal(addGoalModal);
+    renderGoals(); 
+    renderIncomeSectionGoals(); // Also update the goals in income section
+    closeModal(addGoalModal);
   }
 
   function renderGoals() {
@@ -643,19 +657,27 @@ function renderMarketStocks() {
         <div class="goal-actions"><button class="add-funds-to-goal-btn"><i class="fas fa-plus"></i> Add</button><button class="goal-edit-btn"><i class="fas fa-edit"></i></button><button class="goal-delete-btn"><i class="fas fa-trash"></i></button></div>`;
       container.appendChild(el);
     });
+    
+    // Remove any existing event listeners first to prevent duplicates
+    container.removeEventListener('click', goalActionsHandler);
+    
     // Add event listeners using delegation on parent container
-    container.addEventListener('click', function(e){
-        const target = e.target.closest('button');
-        if(!target) return;
-        const goalItem = target.closest('.goal-item');
-        const goalName = goalItem.dataset.goalName;
-
-        if(target.classList.contains('add-funds-to-goal-btn')) handleAddFundsToGoalClick(goalName);
-        else if(target.classList.contains('goal-edit-btn')) handleEditGoalClick(goalName);
-        else if(target.classList.contains('goal-delete-btn')) handleDeleteGoalClick(goalName);
-    });
+    container.addEventListener('click', goalActionsHandler);
   }
   
+  // Separate handler function for goal actions to prevent duplicate event listeners
+  function goalActionsHandler(e) {
+    const target = e.target.closest('button');
+    if(!target) return;
+    const goalItem = target.closest('.goal-item');
+    if(!goalItem) return;
+    const goalName = goalItem.dataset.goalName;
+
+    if(target.classList.contains('add-funds-to-goal-btn')) handleAddFundsToGoalClick(goalName);
+    else if(target.classList.contains('goal-edit-btn')) handleEditGoalClick(goalName);
+    else if(target.classList.contains('goal-delete-btn')) handleDeleteGoalClick(goalName);
+  }
+
   function handleAddFundsToGoalClick(goalName) {
     const amountText = prompt(`Amount to add to "${goalName}":`); if (amountText === null) return;
     const amount = parseFloat(amountText);
@@ -664,8 +686,11 @@ function renderMarketStocks() {
     const goal = userGoals.find(g => g.name === goalName);
     if (goal) {
       goal.currentSavings = Math.min(goal.targetAmount, goal.currentSavings + amount);
+      currentUserBalance -= amount; // Actually deduct from user balance
       addTransaction('Goal Saving', `Added to ${goalName}`, -amount);
+      updateBalanceDisplay(); // Update the balance display
       renderGoals();
+      renderIncomeSectionGoals(); // Also update the goals in income section
     } else alert('Goal not found.');
   }
 
@@ -673,7 +698,7 @@ function renderMarketStocks() {
     const goal = userGoals.find(g => g.name === goalName);
     if (goal) {
       addGoalForm.querySelector('#goal-name').value = goal.name;
-      addGoalForm.querySelector('#goal-icon').value = goal.icon;
+      addGoalForm.querySelector('#goal-icon').value = goal.icon || 'bullseye';
       addGoalForm.querySelector('#goal-amount').value = goal.targetAmount;
       addGoalForm.querySelector('#goal-current').value = goal.currentSavings;
       addGoalForm.querySelector('#goal-date').value = goal.targetDate; 
@@ -686,6 +711,7 @@ function renderMarketStocks() {
     if (confirm(`Delete goal "${goalName}"?`)) {
       userGoals = userGoals.filter(g => g.name !== goalName);
       renderGoals();
+      renderIncomeSectionGoals(); // Also update the goals in income section
     }
   }
 
@@ -844,9 +870,17 @@ function renderMarketStocks() {
         incomeAmount.textContent = `₹${monthlyIncome.toLocaleString()}`;
       }
       
-      alert('Monthly income collected successfully!');
+      // Update button style to show income has been collected
+      const collectIncomeBtn = document.getElementById('collectIncomeBtn');
+      if (collectIncomeBtn) {
+        collectIncomeBtn.classList.add('collected');
+        collectIncomeBtn.textContent = 'Income Collected';
+        collectIncomeBtn.disabled = true;
+      }
+      
+      alert('Monthly income collected successfully! Don\'t forget to pay your monthly expenses.');
     } else {
-      alert('You have already collected this month\'s income.');
+      alert('You have already collected this month\'s income. Please pay your monthly expenses if you haven\'t already.');
     }
   }
 
@@ -871,12 +905,20 @@ function renderMarketStocks() {
           savingsAmount.textContent = `₹${savings.toLocaleString()}`;
         }
         
-        alert('Monthly expenses paid successfully!');
+        // Update button style to show expenses have been paid
+        const payExpensesBtn = document.getElementById('payExpensesBtn');
+        if (payExpensesBtn) {
+          payExpensesBtn.classList.add('paid');
+          payExpensesBtn.textContent = 'Expenses Paid';
+          payExpensesBtn.disabled = true;
+        }
+        
+        alert('Monthly expenses paid successfully! You can now move to the next month.');
       } else {
         alert('Insufficient balance to pay monthly expenses.');
       }
     } else {
-      alert('You have already paid this month\'s expenses.');
+      alert('You have already paid this month\'s expenses. You can now move to the next month.');
     }
   }
 
@@ -884,7 +926,14 @@ function renderMarketStocks() {
   const nextMonthBtn = document.getElementById('nextMonthBtn');
   if (nextMonthBtn) {
     nextMonthBtn.addEventListener('click', function() {
-      if (!expensesPaid) {
+      // Check if current month's tasks are complete
+      if (!incomeCollected && !expensesPaid) {
+        alert('Please collect your income and pay your expenses before moving to the next month.');
+        return;
+      } else if (!incomeCollected) {
+        alert('Please collect your income before moving to the next month.');
+        return;
+      } else if (!expensesPaid) {
         alert('Please pay your monthly expenses before moving to the next month.');
         return;
       }
@@ -899,6 +948,9 @@ function renderMarketStocks() {
       incomeCollected = false;
       expensesPaid = false;
       
+      // Reset button states
+      resetMonthlyButtons();
+      
       updateMonthDisplay();
       
       // Disable button if we've reached the maximum month (current month)
@@ -906,7 +958,26 @@ function renderMarketStocks() {
       if (currentMonth === now.getMonth() && currentYear === now.getFullYear()) {
         nextMonthBtn.disabled = true;
       }
+      
+      alert('Successfully moved to the next month. Don\'t forget to collect your income and pay your expenses.');
     });
+  }
+  
+  // Function to reset the income and expense buttons
+  function resetMonthlyButtons() {
+    const collectIncomeBtn = document.getElementById('collectIncomeBtn');
+    if (collectIncomeBtn) {
+      collectIncomeBtn.classList.remove('collected');
+      collectIncomeBtn.textContent = 'Collect Income';
+      collectIncomeBtn.disabled = false;
+    }
+    
+    const payExpensesBtn = document.getElementById('payExpensesBtn');
+    if (payExpensesBtn) {
+      payExpensesBtn.classList.remove('paid');
+      payExpensesBtn.textContent = 'Pay Expenses';
+      payExpensesBtn.disabled = false;
+    }
   }
 
   // Initialize display
@@ -916,4 +987,64 @@ function renderMarketStocks() {
   // Add this in the DOMContentLoaded event listener section
   document.getElementById('collectIncomeBtn')?.addEventListener('click', collectMonthlyIncome);
   document.getElementById('payExpensesBtn')?.addEventListener('click', payMonthlyExpenses);
+
+  // Function to render goals in the income section
+  function renderIncomeSectionGoals() {
+    const container = document.querySelector('#goals-content .goals-list');
+    if (!container) return;
+    
+    // Clear existing content
+    container.innerHTML = '';
+    
+    userGoals.forEach(goal => {
+      const progress = Math.min(100, (goal.currentSavings / goal.targetAmount * 100)).toFixed(0);
+      
+      const goalItem = document.createElement('div');
+      goalItem.className = 'goal-item';
+      goalItem.dataset.goalName = goal.name;
+      
+      goalItem.innerHTML = `
+        <div class="goal-info">
+          <h4>${goal.name}</h4>
+          <p>Target: ₹${goal.targetAmount.toLocaleString()}</p>
+          <p>Saved: ₹${goal.currentSavings.toLocaleString()} (${progress}%)</p>
+        </div>
+        <div class="goal-progress">
+          <div class="progress-bar">
+            <div class="progress" style="width: ${progress}%;"></div>
+          </div>
+        </div>
+        <div class="goal-actions">
+          <button class="add-funds" data-goal="${goal.name}"><i class="fas fa-plus"></i> Add Funds</button>
+          <button class="edit-goal" data-goal="${goal.name}"><i class="fas fa-edit"></i></button>
+        </div>
+      `;
+      
+      container.appendChild(goalItem);
+    });
+    
+    // Remove existing event listeners to prevent duplicates
+    container.removeEventListener('click', incomeSectionGoalActionsHandler);
+    
+    // Add event listener for goal actions
+    container.addEventListener('click', incomeSectionGoalActionsHandler);
+  }
+
+  // Handler for income section goal actions
+  function incomeSectionGoalActionsHandler(e) {
+    const target = e.target.closest('button');
+    if (!target) return;
+    
+    // Get goal name from data attribute
+    const goalName = target.dataset.goal || target.closest('.goal-item')?.dataset.goalName;
+    if (!goalName) return;
+    
+    if (target.classList.contains('add-funds')) {
+      handleAddFundsToGoalClick(goalName);
+      renderIncomeSectionGoals(); // Re-render to update UI
+    } else if (target.classList.contains('edit-goal')) {
+      handleEditGoalClick(goalName);
+      renderIncomeSectionGoals(); // Re-render to update UI
+    }
+  }
 }); 
